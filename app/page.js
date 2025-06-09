@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import Header from '../components/Header';
 import FileUpload from '../components/FileUpload';
+import AuthWrapper from '../components/AuthWrapper';
+import SubscriptionHandler from '../components/SubscriptionHandler';
 import ProcessingStatus from '../components/ProcessingStatus';
 import SummaryDisplay from '../components/SummaryDisplay';
 
@@ -12,6 +14,11 @@ export default function Home() {
   const [processingStep, setProcessingStep] = useState('');
   const [summary, setSummary] = useState('');
   const [error, setError] = useState('');
+  const [userUsage, setUserUsage] = useState(null);
+
+  const handleUsageCheck = (usage) => {
+    setUserUsage(usage);
+  };
 
   const handleFileSelect = async (file) => {
     setSelectedFile(file);
@@ -66,6 +73,8 @@ export default function Home() {
       <Header />
       
       <main className="max-w-6xl mx-auto px-6 py-12">
+      <AuthWrapper>
+      <SubscriptionHandler onUsageCheck={handleUsageCheck}>
         {/* Hero Section */}
         <div className="text-center mb-16 animate-fade-in-up">
           <h2 className="hero-title mb-6">
@@ -174,6 +183,8 @@ export default function Home() {
             </div>
           </div>
         )}
+            </SubscriptionHandler>
+            </AuthWrapper>
       </main>
 
       {/* Footer */}

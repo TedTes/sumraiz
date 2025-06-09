@@ -1,8 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs';
 import { transcribeAudio, summarizeMeeting } from '../../../lib/openai';
 
 export async function POST(request) {
   try {
+    const { userId } = auth();
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'Please sign in to use MeetingMind' }, { status: 401 });
+    }
+
+    // Check user usage limits
+    const usageResponse = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/usage`, {
+      headers: { 'Authorization': `Bearer ${userId}` }
+    });
+    const usage = await usageResponse.json();
+
+    if (usage.count >= usage.limit && usage.plan === 'free') {
+      return NextResponse.json({ 
+        error: 'Usage limit reached. Please upgrade to Pro for unlimited summaries.' 
+      }, { status: 403 });
+    }
+
     const formData = await request.formData();
     const audioFile = formData.get('audio');
     
@@ -48,6 +67,12 @@ export async function POST(request) {
     // Step 2: Summarize the transcript
     const summary = await summarizeMeeting(transcript);
     console.log('Summarization completed');
+
+    // Step 3: Increment user usage count
+    await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/usage`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${userId}` }
+    });
 
     return NextResponse.json({
       success: true,
