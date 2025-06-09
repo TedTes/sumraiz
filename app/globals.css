@@ -1,0 +1,194 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: 'opsz' 32;
+  }
+}
+
+@layer components {
+  /* Upload Zone Styling */
+  .upload-zone {
+    @apply border-2 border-dashed border-gray-300 rounded-xl p-12 text-center 
+           transition-all duration-300 cursor-pointer
+           hover:border-primary-400 hover:bg-gray-50/50
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  .upload-zone.drag-over {
+    @apply border-primary-500 bg-primary-50 transform scale-[1.02] shadow-lg;
+  }
+  
+  /* Summary Display Styling */
+  .summary-section {
+    @apply bg-white rounded-xl p-6 shadow-sm border border-gray-200 mb-6
+           hover:shadow-md transition-shadow duration-200;
+  }
+  
+  .summary-section h3 {
+    @apply text-lg font-semibold text-gray-900 mb-4 
+           border-b border-gray-100 pb-2;
+  }
+  
+  .summary-section ul {
+    @apply space-y-3;
+  }
+  
+  .summary-section li {
+    @apply text-gray-700 leading-relaxed pl-4 relative;
+  }
+  
+  .summary-section li::before {
+    @apply absolute left-0 top-2 w-1.5 h-1.5 bg-primary-500 rounded-full;
+    content: '';
+  }
+  
+  /* Processing Animation */
+  .processing-animation {
+    @apply animate-pulse-slow;
+  }
+  
+  /* Button Enhancements */
+  .btn-primary {
+    @apply bg-primary-500 text-white px-6 py-3 rounded-lg font-medium
+           hover:bg-primary-600 active:bg-primary-700
+           transition-all duration-200 transform hover:scale-[1.02]
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+           shadow-sm hover:shadow-md;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-gray-700 px-4 py-2 rounded-lg border border-gray-300
+           hover:bg-gray-50 hover:border-gray-400
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  /* Card Styling */
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200
+           hover:shadow-md transition-shadow duration-200;
+  }
+  
+  /* Progress Bar */
+  .progress-bar {
+    @apply bg-gray-200 rounded-full h-2 overflow-hidden;
+  }
+  
+  .progress-fill {
+    @apply bg-gradient-to-r from-primary-500 to-primary-600 h-full
+           transition-all duration-500 ease-out rounded-full;
+  }
+  
+  /* Status Indicators */
+  .status-pending {
+    @apply bg-gray-100 text-gray-400;
+  }
+  
+  .status-active {
+    @apply bg-primary-100 text-primary-600;
+  }
+  
+  .status-complete {
+    @apply bg-green-100 text-green-600;
+  }
+  
+  /* File Display */
+  .file-display {
+    @apply bg-white rounded-xl border border-gray-200 p-6
+           shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+  
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+  
+  .animate-slide-in-down {
+    animation: slideInDown 0.4s ease-out forwards;
+  }
+  
+  /* Prose Styling for Summary Content */
+  .prose-summary {
+    @apply prose prose-gray max-w-none;
+  }
+  
+  .prose-summary p {
+    @apply text-gray-700 leading-relaxed mb-3;
+  }
+  
+  .prose-summary strong {
+    @apply text-gray-900 font-semibold;
+  }
+  
+  /* Error States */
+  .error-container {
+    @apply bg-red-50 border border-red-200 rounded-xl p-6
+           shadow-sm;
+  }
+  
+  .error-icon {
+    @apply bg-red-100 p-2 rounded-full;
+  }
+  
+  /* Success States */
+  .success-container {
+    @apply bg-green-50 border border-green-200 rounded-xl p-6
+           shadow-sm;
+  }
+  
+  /* Loading States */
+  .loading-spinner {
+    @apply animate-spin text-primary-600;
+  }
+  
+  /* Responsive Typography */
+  .hero-title {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 
+           leading-tight tracking-tight;
+  }
+  
+  .hero-subtitle {
+    @apply text-lg md:text-xl text-gray-600 leading-relaxed;
+  }
+  
+  /* Smooth Transitions */
+  .transition-smooth {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  
+  /* Focus Styles */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+}
