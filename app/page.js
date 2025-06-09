@@ -7,6 +7,8 @@ import AuthWrapper from '../components/AuthWrapper';
 import SubscriptionHandler from '../components/SubscriptionHandler';
 import ProcessingStatus from '../components/ProcessingStatus';
 import SummaryDisplay from '../components/SummaryDisplay';
+import LandingPage from '../components/LandingPage';
+import { useUser } from '@clerk/nextjs';
 
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -16,6 +18,21 @@ export default function Home() {
   const [error, setError] = useState('');
   const [userUsage, setUserUsage] = useState(null);
 
+  const { isSignedIn, isLoaded } = useUser();
+
+  // Show loading while Clerk loads
+if (!isLoaded) {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
+    </div>
+  );
+}
+
+// Show landing page if not signed in
+if (!isSignedIn) {
+  return <LandingPage />;
+}
   const handleUsageCheck = (usage) => {
     setUserUsage(usage);
   };
