@@ -69,18 +69,22 @@ export default function FileUpload({ onFileSelect, isProcessing }) {
           onDragLeave={handleDragLeave}
           onClick={() => fileInputRef.current?.click()}
         >
-          <div className="flex flex-col items-center space-y-4">
-            <Upload className="h-12 w-12 text-gray-400" />
+          <div className="flex flex-col items-center space-y-6">
+            <div className="bg-primary-100 p-6 rounded-2xl">
+              <Upload className="h-16 w-16 text-primary-600" />
+            </div>
             <div className="text-center">
-              <p className="text-lg font-medium text-gray-900">
+              <p className="text-2xl font-semibold text-gray-900 mb-2">
                 Drop your meeting recording here
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-gray-500">
                 or click to browse files
               </p>
             </div>
-            <div className="text-xs text-gray-400">
-              Supports MP3, M4A, WAV, WebM • Max 50MB
+            <div className="bg-gray-100 px-4 py-2 rounded-lg">
+              <p className="text-sm text-gray-600 font-medium">
+                Supports MP3, M4A, WAV, WebM • Max 50MB
+              </p>
             </div>
           </div>
           <input
@@ -93,21 +97,21 @@ export default function FileUpload({ onFileSelect, isProcessing }) {
           />
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="file-display">
           <div className="flex items-center space-x-4">
-            <div className="bg-primary-100 p-3 rounded-lg">
-              <FileAudio className="h-6 w-6 text-primary-600" />
+            <div className="bg-primary-100 p-4 rounded-xl">
+              <FileAudio className="h-8 w-8 text-primary-600" />
             </div>
             <div className="flex-1">
-              <p className="font-medium text-gray-900">{selectedFile.name}</p>
-              <p className="text-sm text-gray-500">{formatFileSize(selectedFile.size)}</p>
+              <p className="font-semibold text-gray-900 text-lg">{selectedFile.name}</p>
+              <p className="text-sm text-gray-500 mt-1">{formatFileSize(selectedFile.size)}</p>
             </div>
             {!isProcessing && (
               <button
                 onClick={clearFile}
-                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100 focus-ring"
               >
-                <X className="h-5 w-5" />
+                <X className="h-6 w-6" />
               </button>
             )}
           </div>

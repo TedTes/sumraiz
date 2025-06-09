@@ -49,26 +49,31 @@ export default function SummaryDisplay({ summary }) {
   if (!summary) return null;
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-8">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div className="w-full max-w-4xl mx-auto mt-8 animate-fade-in-up">
+      <div className="card shadow-lg">
         {/* Header */}
-        <div className="border-b border-gray-200 px-6 py-4">
+        <div className="border-b border-gray-200 px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Meeting Summary</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Generated on {new Date().toLocaleDateString()}
+              <h2 className="text-2xl font-bold text-gray-900">Meeting Summary</h2>
+              <p className="text-gray-500 mt-2">
+                Generated on {new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
               </p>
             </div>
-            <div className="flex space-x-2">
+            <div className="flex space-x-3">
               <button
                 onClick={handleCopy}
-                className="flex items-center space-x-2 px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                className="btn-secondary flex items-center space-x-2"
               >
                 {copied ? (
                   <>
                     <CheckCircle className="h-4 w-4 text-green-600" />
-                    <span className="text-green-600">Copied!</span>
+                    <span className="text-green-600 font-medium">Copied!</span>
                   </>
                 ) : (
                   <>
@@ -79,7 +84,7 @@ export default function SummaryDisplay({ summary }) {
               </button>
               <button
                 onClick={handleDownload}
-                className="flex items-center space-x-2 px-3 py-2 text-sm bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors"
+                className="btn-primary flex items-center space-x-2"
               >
                 <Download className="h-4 w-4" />
                 <span>Download</span>

@@ -67,11 +67,11 @@ export default function Home() {
       
       <main className="max-w-6xl mx-auto px-6 py-12">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-16 animate-fade-in-up">
+          <h2 className="hero-title mb-6">
             Transform Meeting Recordings into Actionable Insights
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="hero-subtitle max-w-3xl mx-auto">
             Upload your meeting audio and get structured summaries with key decisions, 
             action items, and next steps in just minutes.
           </p>
@@ -94,10 +94,10 @@ export default function Home() {
           )}
 
           {error && (
-            <div className="w-full max-w-2xl mx-auto">
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+            <div className="w-full max-w-2xl mx-auto animate-slide-in-down">
+              <div className="error-container">
                 <div className="flex items-center space-x-3">
-                  <div className="bg-red-100 p-2 rounded-full">
+                  <div className="error-icon">
                     <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -109,7 +109,7 @@ export default function Home() {
                 </div>
                 <button
                   onClick={handleStartOver}
-                  className="mt-4 text-sm bg-red-100 text-red-800 px-3 py-2 rounded-md hover:bg-red-200 transition-colors"
+                  className="mt-4 text-sm bg-red-100 text-red-800 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors focus-ring"
                 >
                   Try Again
                 </button>
@@ -121,10 +121,10 @@ export default function Home() {
             <>
               <SummaryDisplay summary={summary} />
               
-              <div className="text-center">
+              <div className="text-center animate-fade-in-up">
                 <button
                   onClick={handleStartOver}
-                  className="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors font-medium"
+                  className="btn-primary"
                 >
                   Process Another Meeting
                 </button>
@@ -135,35 +135,42 @@ export default function Home() {
 
         {/* Features Section */}
         {!summary && !isProcessing && (
-          <div className="mt-16 grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="bg-primary-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Smart Transcription</h3>
-              <p className="text-gray-600">Advanced AI converts speech to text with high accuracy</p>
+          <div className="mt-20 animate-fade-in-up">
+            <div className="text-center mb-12">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Why Choose MeetingMind?</h3>
+              <p className="text-gray-600">Powerful AI technology that transforms how you handle meeting follow-ups</p>
             </div>
             
-            <div className="text-center">
-              <div className="bg-primary-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                </svg>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="card p-8 text-center hover:scale-[1.02] transition-smooth">
+                <div className="bg-primary-100 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
+                  <svg className="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-semibold text-gray-900 mb-3">Smart Transcription</h4>
+                <p className="text-gray-600 leading-relaxed">Advanced AI converts speech to text with industry-leading accuracy, handling accents and background noise</p>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Structured Summaries</h3>
-              <p className="text-gray-600">Organized sections for decisions, action items, and next steps</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="bg-primary-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <svg className="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              
+              <div className="card p-8 text-center hover:scale-[1.02] transition-smooth">
+                <div className="bg-primary-100 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
+                  <svg className="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-semibold text-gray-900 mb-3">Structured Summaries</h4>
+                <p className="text-gray-600 leading-relaxed">Organized sections for decisions, action items, and next steps with clear ownership and deadlines</p>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Save Time</h3>
-              <p className="text-gray-600">Get comprehensive summaries in minutes instead of hours</p>
+              
+              <div className="card p-8 text-center hover:scale-[1.02] transition-smooth">
+                <div className="bg-primary-100 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
+                  <svg className="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-semibold text-gray-900 mb-3">Save Time</h4>
+                <p className="text-gray-600 leading-relaxed">Get comprehensive summaries in minutes instead of hours, with 95% reduction in manual note-taking</p>
+              </div>
             </div>
           </div>
         )}
