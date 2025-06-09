@@ -5,9 +5,9 @@ import { Brain, Play, Check, Zap, FileText, Clock } from 'lucide-react';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white shadow-sm border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -57,17 +57,22 @@ export default function LandingPage() {
           </div>
           
           {/* CTA Section */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <SignInButton mode="modal">
-              <button className="bg-primary-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-600 transition-colors shadow-lg hover:shadow-xl">
-                Start Free Trial (3 Summaries)
-              </button>
-            </SignInButton>
-            <div className="text-center sm:text-left">
-              <p className="text-sm text-gray-500">No credit card required</p>
-              <p className="text-sm text-gray-500">Setup in 2 minutes</p>
-            </div>
-          </div>
+          <section className="bg-primary-50 border-t border-primary-100 py-20">
+  <div className="max-w-4xl mx-auto px-6 text-center">
+    <h3 className="text-3xl font-bold text-gray-900 mb-4">
+      Ready to Transform Your Meetings?
+    </h3>
+    <p className="text-xl text-gray-600 mb-8">
+      Join teams who never miss important action items
+    </p>
+    <SignInButton mode="modal">
+      <button className="bg-primary-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-600 transition-colors shadow-sm">
+        Get Started Free
+      </button>
+    </SignInButton>
+    <p className="text-gray-500 mt-4">No credit card required • 3 free summaries</p>
+  </div>
+</section>
         </div>
       </section>
 
@@ -108,7 +113,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-gray-50">  
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">Why Choose MeetingMind?</h3>
@@ -116,7 +121,7 @@ export default function LandingPage() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white rounded-xl p-8 border border-gray-100 hover:shadow-sm transition-shadow">
               <div className="bg-primary-100 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
                 <Zap className="h-6 w-6 text-primary-600" />
               </div>
@@ -124,7 +129,7 @@ export default function LandingPage() {
               <p className="text-gray-600">Process 45-minute meetings in under 3 minutes with industry-leading AI</p>
             </div>
             
-            <div className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white rounded-xl p-8 border border-gray-100 hover:shadow-sm transition-shadow">
               <div className="bg-primary-100 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
                 <FileText className="h-6 w-6 text-primary-600" />
               </div>
@@ -132,7 +137,7 @@ export default function LandingPage() {
               <p className="text-gray-600">Get organized sections for decisions, action items, and next steps</p>
             </div>
             
-            <div className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white rounded-xl p-8 border border-gray-100 hover:shadow-sm transition-shadow">
               <div className="bg-primary-100 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
                 <Clock className="h-6 w-6 text-primary-600" />
               </div>
@@ -220,7 +225,7 @@ export default function LandingPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="bg-primary-600 py-16">
+      <section className="bg-primary-50 py-20">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h3 className="text-3xl font-bold text-white mb-4">
             Ready to Transform Your Meetings?
@@ -238,15 +243,15 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-8">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Brain className="h-5 w-5" />
-            <span className="font-semibold">MeetingMind</span>
-          </div>
-          <p className="text-sm">Built with Next.js and OpenAI • Transform your meetings into actionable insights</p>
-        </div>
-      </footer>
+      <footer className="bg-white border-t border-gray-200 py-12">
+  <div className="max-w-6xl mx-auto px-6 text-center">
+    <div className="flex items-center justify-center space-x-2 mb-4">
+      <Brain className="h-5 w-5 text-primary-500" />
+      <span className="font-semibold text-gray-700">MeetingMind</span>
+    </div>
+    <p className="text-sm text-gray-600">Built with Next.js and OpenAI • Transform your meetings into actionable insights</p>
+  </div>
+</footer>
     </div>
   );
 }
