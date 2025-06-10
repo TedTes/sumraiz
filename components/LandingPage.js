@@ -6,7 +6,7 @@ import { Brain, Play, Check, Zap, FileText, Clock, Sparkles, ArrowRight, Star } 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Enhanced Header */}
+      {/*  Header */}
       <header className="bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -49,12 +49,12 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Enhanced Hero Section */}
+      {/*  Hero Section */}
       <section className="max-w-6xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <div className="inline-flex items-center bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-full px-4 py-2 mb-8">
-            <Star className="h-4 w-4 text-indigo-500 mr-2" />
-            <span className="text-sm font-medium text-indigo-700">Trusted by 1,000+ teams worldwide</span>
+            <Sparkles className="h-4 w-4 text-indigo-500 mr-2" />
+            <span className="text-sm font-medium text-indigo-700">Powered by advanced AI technology</span>
           </div>
           
           <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
@@ -68,7 +68,7 @@ export default function LandingPage() {
             action items, and next steps. No more manual note-taking or missed follow-ups.
           </p>
           
-          {/* Enhanced Demo Video Section */}
+          {/*  Demo Video Section */}
           <div className="max-w-4xl mx-auto mb-12">
             <div className="bg-white rounded-3xl shadow-2xl p-4">
               <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-cyan-50 rounded-2xl aspect-video flex items-center justify-center cursor-pointer hover:from-indigo-100 hover:via-purple-100 hover:to-cyan-100 transition-all duration-300 group relative overflow-hidden">
@@ -87,7 +87,7 @@ export default function LandingPage() {
             </div>
           </div>
           
-          {/* Enhanced CTA Buttons */}
+          {/*  CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             <SignInButton mode="modal">
               <button className="group relative bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 overflow-hidden">
@@ -109,7 +109,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Enhanced How It Works */}
+      {/*  How It Works */}
       <section className="bg-white py-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -160,7 +160,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Enhanced Features */}
+      {/*  Features */}
       <section className="py-20 bg-gradient-to-br from-gray-50 to-indigo-50">  
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -196,7 +196,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Enhanced Pricing */}
+      {/*  Pricing */}
       <section className="bg-white py-20">
         <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -281,7 +281,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Enhanced Final CTA */}
+      {/*  Final CTA */}
       <section className="bg-gradient-to-br from-indigo-500 via-purple-600 to-cyan-500 py-20 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
@@ -296,8 +296,8 @@ export default function LandingPage() {
             Ready to Transform Your Meetings?
           </h3>
           <p className="text-xl text-indigo-100 mb-10 leading-relaxed">
-            Join 1,000+ teams who never miss important action items.<br />
-            Start your free trial today - no credit card required.
+            Start transforming your meetings into actionable insights.<br />
+            Begin your free trial today - no credit card required.
           </p>
           <SignInButton mode="modal">
             <button className="group bg-white text-indigo-600 px-10 py-5 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-200 shadow-2xl hover:shadow-3xl hover:scale-105">
@@ -311,7 +311,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Enhanced Footer */}
+      {/*  Footer */}
       <footer className="bg-white border-t border-gray-200 py-16">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center space-y-6">
