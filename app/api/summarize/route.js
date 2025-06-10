@@ -1,15 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { transcribeAudio, summarizeMeeting } from '../../../lib/openai';
 
 export async function POST(request) {
   try {
-    const { userId } = auth();
+      // Try both sync and async versions of auth()
+      let authResult;
+      try {
+        authResult = await auth();
+      } catch (error) {
+        // If await fails, try sync version
+        authResult = auth();
+      }
+      const { userId } = authResult || {};
     
     if (!userId) {
       return NextResponse.json({ error: 'Please sign in to use MeetingMind' }, { status: 401 });
     }
-
     // Check user usage limits
     const usageResponse = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/usage`, {
       headers: { 'Authorization': `Bearer ${userId}` }

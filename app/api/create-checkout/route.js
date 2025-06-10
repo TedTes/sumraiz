@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { Polar } from '@polar-sh/sdk';
 
 const polar = new Polar({
@@ -8,7 +8,15 @@ const polar = new Polar({
 
 export async function POST(request) {
   try {
-    const { userId } = auth();
+     // Try both sync and async versions of auth()
+     let authResult;
+     try {
+       authResult = await auth();
+     } catch (error) {
+       // If await fails, try sync version
+       authResult = auth();
+     }
+     const { userId } = authResult || {};
     
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
