@@ -43,12 +43,7 @@ export default function Header() {
           </div>
         </div>
         
-        <div className="mt-4">
-          <p className="text-gray-700 max-w-2xl">
-            Upload your meeting recording and get structured summaries with action items, 
-            key decisions, and next steps in minutes.
-          </p>
-        </div>
+     
       </div>
     </header>
   );
