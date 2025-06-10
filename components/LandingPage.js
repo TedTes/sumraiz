@@ -68,24 +68,20 @@ export default function LandingPage() {
             action items, and next steps. No more manual note-taking or missed follow-ups.
           </p>
           
-          {/*  Demo Video Section */}
-          <div className="max-w-4xl mx-auto mb-12">
-            <div className="bg-white rounded-3xl shadow-2xl p-4">
-              <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-cyan-50 rounded-2xl aspect-video flex items-center justify-center cursor-pointer hover:from-indigo-100 hover:via-purple-100 hover:to-cyan-100 transition-all duration-300 group relative overflow-hidden">
-                <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
-                  <div className="w-32 h-32 bg-gradient-to-br from-indigo-100 to-cyan-100 rounded-full opacity-50 blur-xl"></div>
-                </div>
-                
-                <div className="text-center relative z-10">
-                  <div className="bg-gradient-to-r from-indigo-500 to-purple-600 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 hover:scale-110 transition-transform duration-300 shadow-xl group-hover:shadow-2xl">
-                    <Play className="h-10 w-10 text-white ml-1" />
-                  </div>
-                  <p className="text-indigo-800 font-bold text-xl mb-2">Watch 60-Second Demo</p>
-                  <p className="text-indigo-600 text-lg">See MeetingMind transform a real meeting</p>
-                </div>
-              </div>
-            </div>
-          </div>
+   
+{/* Demo Video Section */}
+<div className="max-w-4xl mx-auto mb-12">
+  <div className="bg-white rounded-3xl shadow-2xl p-4">
+    <video 
+      className="w-full h-full rounded-2xl aspect-video shadow-lg"
+      controls
+      preload="metadata"
+    >
+      <source src="/meeting-mind-demo.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
           
           {/*  CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
