@@ -10,77 +10,7 @@ import SummaryDisplay from '../components/SummaryDisplay';
 import LandingPage from '../components/LandingPage';
 import { useUser } from '@clerk/nextjs';
 
-// Compact Summary Length Selector - More appropriately sized
-const SummaryLengthSelector = ({ summaryLength, setSummaryLength }) => {
-  const options = [
-    { 
-      key: 'brief', 
-      label: 'Brief', 
-      desc: '1-2 min read', 
-      icon: '⚡',
-      bgColor: 'from-green-400 to-emerald-500'
-    },
-    { 
-      key: 'medium', 
-      label: 'Standard', 
-      desc: '3-4 min read', 
-      icon: '📊',
-      bgColor: 'from-blue-400 to-indigo-500'
-    },
-    { 
-      key: 'detailed', 
-      label: 'Detailed', 
-      desc: '5+ min read', 
-      icon: '📖',
-      bgColor: 'from-purple-400 to-pink-500'
-    }
-  ];
 
-  return (
-    <div className="mb-6">
-      <div className="flex items-center space-x-2 mb-3">
-        <span className="text-sm font-medium text-gray-700">Summary Detail Level</span>
-        <div className="w-4 h-4 bg-gray-300 rounded-full flex items-center justify-center cursor-help" title="Choose how detailed you want your summary to be">
-          <span className="text-xs text-gray-600">?</span>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-3 gap-3">
-        {options.map((option) => (
-          <button
-            key={option.key}
-            onClick={() => setSummaryLength(option.key)}
-            className={`relative p-3 rounded-xl border-2 transition-all duration-200 ${
-              summaryLength === option.key
-                ? 'border-indigo-300 bg-indigo-50 shadow-md scale-105'
-                : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
-            }`}
-          >
-            <div className="text-center space-y-2">
-              <div className={`w-8 h-8 mx-auto rounded-lg flex items-center justify-center shadow-sm ${
-                summaryLength === option.key 
-                  ? `bg-gradient-to-br ${option.bgColor} text-white` 
-                  : 'bg-gray-100 text-gray-600'
-              }`}>
-                <span className="text-sm">{option.icon}</span>
-              </div>
-              <div>
-                <div className="font-medium text-gray-800 text-sm">{option.label}</div>
-                <div className="text-xs text-gray-500">{option.desc}</div>
-              </div>
-            </div>
-            
-            {summaryLength === option.key && (
-              <div className="absolute -top-1 -right-1 w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center shadow-md">
-                <span className="text-white text-xs">✓</span>
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 // Enhanced Upload Zone - File upload first, compact sidebar for settings
 const UploadZone = ({ onFileSelect, isProcessing, summaryLength, setSummaryLength }) => (
