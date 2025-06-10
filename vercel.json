@@ -1,12 +1,10 @@
 {
     "functions": {
       "app/api/summarize/route.js": {
-        "maxDuration": 300
-      }
-    },
-    "api": {
-      "bodyParser": {
-        "sizeLimit": "50mb"
+        "maxDuration": 60
+      },
+      "app/api/user/usage/route.js": {
+        "maxDuration": 30
       }
     }
   }
