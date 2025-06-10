@@ -1,16 +1,18 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, FileAudio, X } from 'lucide-react';
+import { Upload, FileAudio, X, CheckCircle2 } from 'lucide-react';
 
 export default function FileUpload({ onFileSelect, isProcessing }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleFileSelect = (file) => {
     if (file && isValidFile(file)) {
       setSelectedFile(file);
+      setUploadSuccess(true);
       onFileSelect(file);
     } else {
       alert('Please select a valid audio/video file (MP3, M4A, WAV, WebM, MP4) under 50MB');
@@ -52,6 +54,7 @@ export default function FileUpload({ onFileSelect, isProcessing }) {
 
   const clearFile = () => {
     setSelectedFile(null);
+    setUploadSuccess(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -65,38 +68,64 @@ export default function FileUpload({ onFileSelect, isProcessing }) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const getFileIcon = (fileName) => {
+    const extension = fileName.split('.').pop().toLowerCase();
+    const audioFormats = ['mp3', 'm4a', 'wav', 'webm'];
+    const videoFormats = ['mp4', 'mov', 'avi'];
+    
+    if (audioFormats.includes(extension)) return '🎵';
+    if (videoFormats.includes(extension)) return '🎥';
+    return '📁';
+  };
+
   return (
     <div className="w-full">
       {!selectedFile ? (
         <div
           className={`
-            border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 cursor-pointer
-            ${dragOver ? 'border-primary-400 bg-primary-50' : 'border-gray-300'}
-            ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'hover:border-primary-300 hover:bg-gray-50'}
+            border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer group
+            ${dragOver ? 'border-indigo-400 bg-indigo-50 scale-105' : 'border-gray-300'}
+            ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'hover:border-indigo-300 hover:bg-gray-50 hover:scale-102'}
           `}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onClick={() => !isProcessing && fileInputRef.current?.click()}
         >
-          <div className="flex flex-col items-center space-y-4">
-            <div className="bg-primary-100 p-4 rounded-2xl">
-              <Upload className="h-12 w-12 text-primary-600" />
+          <div className="flex flex-col items-center space-y-6">
+            <div className={`p-6 rounded-3xl transition-all duration-300 ${
+              dragOver ? 'bg-indigo-200 scale-110' : 'bg-indigo-100 group-hover:bg-indigo-200 group-hover:scale-105'
+            }`}>
+              <Upload className={`h-16 w-16 transition-colors duration-300 ${
+                dragOver ? 'text-indigo-700' : 'text-indigo-600'
+              }`} />
             </div>
-            <div className="text-center">
-              <p className="text-xl font-semibold text-gray-900 mb-2">
+            
+            <div className="text-center space-y-3">
+              <h3 className="text-2xl font-bold text-gray-900">
                 Drop your meeting recording here
-              </p>
-              <p className="text-gray-600">
+              </h3>
+              <p className="text-lg text-gray-600">
                 or click to browse files
               </p>
-            </div>
-            <div className="bg-gray-100 px-4 py-2 rounded-lg">
-              <p className="text-sm text-gray-600 font-medium">
-                Supports MP3, M4A, WAV, WebM, MP4 • Max 50MB
-              </p>
+              
+              {/* Enhanced file type display */}
+              <div className="flex flex-wrap justify-center gap-2 mt-4">
+                {['MP3', 'M4A', 'WAV', 'WebM', 'MP4'].map((format) => (
+                  <span key={format} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
+                    {format}
+                  </span>
+                ))}
+              </div>
+              
+              <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mt-4">
+                <p className="text-sm text-blue-800 font-medium">
+                  Maximum file size: 50MB
+                </p>
+              </div>
             </div>
           </div>
+          
           <input
             ref={fileInputRef}
             type="file"
@@ -107,23 +136,55 @@ export default function FileUpload({ onFileSelect, isProcessing }) {
           />
         </div>
       ) : (
-        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+        <div className={`bg-white border-2 rounded-2xl p-6 shadow-lg transition-all duration-300 ${
+          uploadSuccess ? 'border-green-200 bg-green-50' : 'border-gray-200'
+        }`}>
           <div className="flex items-center space-x-4">
-            <div className="bg-primary-100 p-3 rounded-xl">
-              <FileAudio className="h-6 w-6 text-primary-600" />
+            <div className={`p-4 rounded-2xl ${
+              uploadSuccess ? 'bg-green-100' : 'bg-indigo-100'
+            }`}>
+              <FileAudio className={`h-8 w-8 ${
+                uploadSuccess ? 'text-green-600' : 'text-indigo-600'
+              }`} />
             </div>
+            
             <div className="flex-1">
-              <p className="font-semibold text-gray-900">{selectedFile.name}</p>
-              <p className="text-sm text-gray-600 mt-1">{formatFileSize(selectedFile.size)}</p>
+              <div className="flex items-center space-x-2 mb-1">
+                <span className="text-2xl">{getFileIcon(selectedFile.name)}</span>
+                <h4 className="font-bold text-gray-900 text-lg">{selectedFile.name}</h4>
+                {uploadSuccess && (
+                  <CheckCircle2 className="h-5 w-5 text-green-500" />
+                )}
+              </div>
+              
+              <div className="flex items-center space-x-4 text-sm text-gray-600">
+                <span className="font-medium">{formatFileSize(selectedFile.size)}</span>
+                <span className="flex items-center space-x-1">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  <span>Ready for processing</span>
+                </span>
+              </div>
             </div>
+            
             {!isProcessing && (
               <button
                 onClick={clearFile}
-                className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100 focus:ring-2 focus:ring-primary-300"
+                className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all duration-200 rounded-xl focus:ring-2 focus:ring-red-300 group"
+                title="Remove file"
               >
-                <X className="h-5 w-5" />
+                <X className="h-6 w-6 group-hover:scale-110 transition-transform duration-200" />
               </button>
             )}
+          </div>
+          
+          {/* File preview info */}
+          <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <div className="flex items-center space-x-2 text-sm">
+              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+              <span className="text-gray-700 font-medium">
+                File uploaded successfully! Click "Process" to continue.
+              </span>
+            </div>
           </div>
         </div>
       )}
