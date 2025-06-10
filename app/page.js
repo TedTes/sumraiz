@@ -10,6 +10,361 @@ import SummaryDisplay from '../components/SummaryDisplay';
 import LandingPage from '../components/LandingPage';
 import { useUser } from '@clerk/nextjs';
 
+const SummaryLengthSelector = ({ summaryLength, setSummaryLength }) => {
+  const options = [
+    { 
+      key: 'brief', 
+      label: 'Brief', 
+      desc: '1-2 min read', 
+      icon: '⚡',
+      bgColor: 'from-green-400 to-emerald-500',
+      iconBg: 'bg-green-500'
+    },
+    { 
+      key: 'medium', 
+      label: 'Standard', 
+      desc: '3-4 min read', 
+      icon: '📊',
+      bgColor: 'from-blue-400 to-indigo-500',
+      iconBg: 'bg-blue-500'
+    },
+    { 
+      key: 'detailed', 
+      label: 'Detailed', 
+      desc: '5+ min read', 
+      icon: '📖',
+      bgColor: 'from-purple-400 to-pink-500',
+      iconBg: 'bg-gray-500'
+    }
+  ];
+
+  return (
+    <div className="mb-8">
+      <div className="flex items-center space-x-2 mb-4">
+        <span className="text-sm font-semibold text-gray-700">Summary Detail Level</span>
+        <div className="w-4 h-4 bg-gray-300 rounded-full flex items-center justify-center cursor-help" title="Choose how detailed you want your summary to be">
+          <span className="text-xs text-gray-600">?</span>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-3 gap-4">
+        {options.map((option) => (
+          <button
+            key={option.key}
+            onClick={() => setSummaryLength(option.key)}
+            className={`relative p-6 rounded-2xl border-2 transition-all duration-300 ${
+              summaryLength === option.key
+                ? 'border-indigo-300 bg-indigo-50 shadow-lg transform scale-105'
+                : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+            }`}
+          >
+            <div className="text-center space-y-3">
+              <div className={`w-12 h-12 mx-auto rounded-xl flex items-center justify-center shadow-md ${
+                summaryLength === option.key 
+                  ? `bg-gradient-to-br ${option.bgColor} text-white` 
+                  : 'bg-gray-100 text-gray-600'
+              }`}>
+                <span className="text-lg">{option.icon}</span>
+              </div>
+              <div>
+                <div className="font-semibold text-gray-800">{option.label}</div>
+                <div className="text-sm text-gray-500">{option.desc}</div>
+              </div>
+            </div>
+            
+            {summaryLength === option.key && (
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-white text-xs">✓</span>
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const UploadZone = ({ onFileSelect, isProcessing, summaryLength, setSummaryLength }) => (
+  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    {/* Header with icon and title */}
+    <div className="bg-gray-50 p-6 border-b border-gray-200">
+      <div className="flex items-center space-x-3">
+        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
+          <span className="text-white text-lg">🎤</span>
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Upload Meeting Recording</h2>
+          <p className="text-gray-600">Choose your audio file and preferred summary style</p>
+        </div>
+      </div>
+    </div>
+    
+    {/* Summary Length Selector */}
+    <div className="p-6 border-b border-gray-100">
+      <SummaryLengthSelector summaryLength={summaryLength} setSummaryLength={setSummaryLength} />
+    </div>
+    
+    {/* File Upload Area */}
+    <div className="p-6">
+      <FileUpload onFileSelect={onFileSelect} isProcessing={isProcessing} />
+    </div>
+    
+    {/* Info Cards - matching your exact design */}
+    <div className="p-6 bg-gray-50 border-t border-gray-100">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div className="flex items-center space-x-3 bg-white rounded-lg p-3 border border-gray-200">
+          <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+            <span className="text-green-600 text-sm">📁</span>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-gray-800">Formats</div>
+            <div className="text-xs text-gray-600">MP3, M4A, WAV, WebM</div>
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-3 bg-white rounded-lg p-3 border border-gray-200">
+          <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+            <span className="text-yellow-600 text-sm">⚡</span>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-gray-800">Max Size</div>
+            <div className="text-xs text-gray-600">50MB per file</div>
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-3 bg-white rounded-lg p-3 border border-gray-200">
+          <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+            <span className="text-purple-600 text-sm">⏱️</span>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-gray-800">Processing</div>
+            <div className="text-xs text-gray-600">2-3 minutes</div>
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-3 bg-white rounded-lg p-3 border border-gray-200">
+          <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+            <span className="text-red-600 text-sm">🎯</span>
+          </div>
+          <div>
+            <div className="text-xs font-semibold text-gray-800">Optimal</div>
+            <div className="text-xs text-gray-600">10-60 min recordings</div>
+          </div>
+        </div>
+      </div>
+      
+      <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+          <span className="text-sm font-medium text-indigo-800">
+            Selected: {summaryLength === 'brief' ? 'Brief summary (1-2 min read)' : 
+            summaryLength === 'medium' ? 'Standard summary (3-4 min read)' : 'Detailed summary (5+ min read)'}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Enhanced Processing Display
+const ProcessingDisplay = ({ processingStep, summaryLength }) => (
+  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6">
+      <div className="flex items-center space-x-4">
+        <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-white">Processing Your Meeting</h3>
+          <p className="text-indigo-100">Creating your {summaryLength} summary...</p>
+        </div>
+      </div>
+    </div>
+    
+    <div className="p-6">
+      <ProcessingStatus status="processing" currentStep={processingStep} />
+      
+      <div className="mt-6 bg-blue-50 rounded-xl p-4 border border-blue-200">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+            <span className="text-blue-600 text-sm">💡</span>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-blue-800">AI Processing in Progress</p>
+            <p className="text-xs text-blue-600">
+              Analyzing speech patterns, identifying key topics, and extracting actionable items
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Enhanced Error Display
+const ErrorDisplay = ({ error, onRetry }) => (
+  <div className="bg-white rounded-2xl border border-red-200 shadow-sm overflow-hidden">
+    <div className="bg-gradient-to-r from-red-50 to-pink-50 p-6 border-b border-red-100">
+      <div className="flex items-center space-x-4">
+        <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+          <span className="text-red-600 text-xl">⚠️</span>
+        </div>
+        <div>
+          <h3 className="text-xl font-bold text-red-800">Processing Failed</h3>
+          <p className="text-red-600">Something went wrong, but we can try again</p>
+        </div>
+      </div>
+    </div>
+    
+    <div className="p-6">
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+        <p className="text-red-700 font-medium">{error}</p>
+      </div>
+      
+      <div className="flex flex-col sm:flex-row gap-3">
+        <button
+          onClick={onRetry}
+          className="flex-1 bg-gradient-to-r from-red-500 to-pink-500 text-white px-6 py-3 rounded-xl font-medium hover:from-red-600 hover:to-pink-600 transition-all duration-200 shadow-md hover:shadow-lg"
+        >
+          Try Again
+        </button>
+        <button className="flex-1 bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-medium hover:bg-gray-200 transition-colors">
+          Contact Support
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+// Enhanced Action Hub for Export & Share
+const ActionHub = ({ onStartOver }) => (
+  <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 border-b border-emerald-100">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-md">
+            <span className="text-white text-lg">🚀</span>
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-emerald-800">Export & Share</h3>
+            <p className="text-emerald-600">Choose how you'd like to use your summary</p>
+          </div>
+        </div>
+        <button 
+          onClick={onStartOver} 
+          className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-3 rounded-xl font-medium hover:from-indigo-600 hover:to-purple-600 transition-all duration-200 shadow-md hover:shadow-lg"
+        >
+          Process Another Meeting
+        </button>
+      </div>
+    </div>
+    
+    <div className="p-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { icon: '📧', label: 'Email', desc: 'Send summary', color: 'from-blue-400 to-blue-500' },
+          { icon: '📋', label: 'Copy Items', desc: 'Action items', color: 'from-green-400 to-emerald-500' },
+          { icon: '📄', label: 'Export PDF', desc: 'Download', color: 'from-red-400 to-pink-500' },
+          { icon: '📅', label: 'Schedule', desc: 'Follow-ups', color: 'from-purple-400 to-indigo-500' }
+        ].map((action, index) => (
+          <button
+            key={index}
+            className="group relative bg-gray-50 hover:bg-white border border-gray-200 hover:border-gray-300 rounded-xl p-4 transition-all duration-200 hover:shadow-md"
+          >
+            <div className="text-center space-y-3">
+              <div className={`w-12 h-12 mx-auto bg-gradient-to-br ${action.color} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-200`}>
+                <span className="text-white text-lg">{action.icon}</span>
+              </div>
+              <div>
+                <div className="font-medium text-gray-800 group-hover:text-gray-900">{action.label}</div>
+                <div className="text-xs text-gray-500">{action.desc}</div>
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+// First Summary Celebration
+const CelebrationBanner = ({ userUsage }) => {
+  if (!userUsage || userUsage.count !== 1) return null;
+  
+  return (
+    <div className="relative overflow-hidden bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 rounded-2xl border border-emerald-200 shadow-sm">
+      <div className="absolute top-0 right-0 -translate-y-8 translate-x-8">
+        <div className="w-24 h-24 bg-gradient-to-br from-emerald-200 to-teal-200 rounded-full opacity-30 blur-xl"></div>
+      </div>
+      
+      <div className="relative p-8">
+        <div className="flex items-start space-x-6">
+          <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center shadow-lg">
+            <span className="text-3xl">🎉</span>
+          </div>
+          
+          <div className="flex-1">
+            <h4 className="text-2xl font-bold text-emerald-800 mb-2">
+              Congratulations on your first summary!
+            </h4>
+            <p className="text-emerald-700 text-lg mb-4">
+              You have <span className="font-bold">{userUsage.limit - userUsage.count}</span> free summaries remaining in your trial.
+            </p>
+            
+            <div className="flex flex-wrap gap-3">
+              {[
+                { label: 'Multiple export formats', icon: '✨', color: 'bg-emerald-100 text-emerald-800' },
+                { label: 'Easy sharing options', icon: '📧', color: 'bg-teal-100 text-teal-800' },
+                { label: 'Action item tracking', icon: '📊', color: 'bg-cyan-100 text-cyan-800' },
+                { label: 'Smart insights', icon: '🧠', color: 'bg-blue-100 text-blue-800' }
+              ].map((feature, index) => (
+                <span
+                  key={index}
+                  className={`inline-flex items-center space-x-2 ${feature.color} px-4 py-2 rounded-full text-sm font-medium shadow-sm`}
+                >
+                  <span>{feature.icon}</span>
+                  <span>{feature.label}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Smart Alert Component
+const SmartAlert = ({ userUsage }) => {
+  if (!userUsage || userUsage.plan !== 'free') return null;
+  
+  const remaining = userUsage.limit - userUsage.count;
+  
+  if (remaining === 1) {
+    return (
+      <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-l-4 border-amber-400 rounded-xl p-6 shadow-sm mb-8">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+              <span className="text-2xl">⚡</span>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-amber-800">Last Free Summary!</h3>
+              <p className="text-amber-700">Make it count, then unlock unlimited processing</p>
+            </div>
+          </div>
+          <button className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-xl font-medium hover:from-amber-600 hover:to-orange-600 transition-all duration-200 shadow-md hover:shadow-lg">
+            Upgrade Now
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  return null;
+};
+
+// Main Component
 export default function Home() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -17,22 +372,32 @@ export default function Home() {
   const [summary, setSummary] = useState('');
   const [error, setError] = useState('');
   const [userUsage, setUserUsage] = useState(null);
+  const [summaryLength, setSummaryLength] = useState('brief'); // Default to brief to match your design
 
   const { isSignedIn, isLoaded } = useUser();
 
-  // Show loading while Clerk loads
-if (!isLoaded) {
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
-    </div>
-  );
-}
+  // Loading state
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg animate-pulse">
+            <span className="text-white text-2xl">🎯</span>
+          </div>
+          <div className="space-y-2">
+            <div className="w-32 h-3 bg-gray-200 rounded-full animate-pulse mx-auto"></div>
+            <div className="w-24 h-2 bg-gray-100 rounded-full animate-pulse mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-// Show landing page if not signed in
-if (!isSignedIn) {
-  return <LandingPage />;
-}
+  // Landing page for non-authenticated users
+  if (!isSignedIn) {
+    return <LandingPage />;
+  }
+
   const handleUsageCheck = (usage) => {
     setUserUsage(usage);
   };
@@ -47,6 +412,7 @@ if (!isSignedIn) {
     try {
       const formData = new FormData();
       formData.append('audio', file);
+      formData.append('summaryLength', summaryLength);
 
       setProcessingStep('transcribing');
       
@@ -63,7 +429,7 @@ if (!isSignedIn) {
 
       setProcessingStep('summarizing');
       
-      // Small delay to show the summarizing step
+      // Small delay to show summarizing step
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       setProcessingStep('complete');
@@ -85,131 +451,103 @@ if (!isSignedIn) {
     setError('');
   };
 
+  const isFirstTime = userUsage?.count === 0;
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      
-      <main className="max-w-6xl mx-auto px-6 py-12">
-      <AuthWrapper>
-      <SubscriptionHandler onUsageCheck={handleUsageCheck}>
-        {/* Hero Section */}
-        <div className="text-center mb-16 animate-fade-in-up">
-          <h2 className="hero-title mb-6">
-            Transform Meeting Recordings into Actionable Insights
-          </h2>
-          <p className="hero-subtitle max-w-3xl mx-auto">
-            Upload your meeting audio and get structured summaries with key decisions, 
-            action items, and next steps in just minutes.
-          </p>
-        </div>
 
-        {/* Main Content */}
-        <div className="space-y-8">
-          {!summary && !isProcessing && (
-            <FileUpload 
-              onFileSelect={handleFileSelect} 
-              isProcessing={isProcessing}
-            />
-          )}
-
-          {isProcessing && (
-            <ProcessingStatus 
-              status="processing" 
-              currentStep={processingStep}
-            />
-          )}
-
-          {error && (
-            <div className="w-full max-w-2xl mx-auto animate-slide-in-down">
-              <div className="error-container">
-                <div className="flex items-center space-x-3">
-                  <div className="error-icon">
-                    <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-red-800">Processing Error</h3>
-                    <p className="text-sm text-red-700 mt-1">{error}</p>
-                  </div>
-                </div>
-                <button
-                  onClick={handleStartOver}
-                  className="mt-4 text-sm bg-red-100 text-red-800 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors focus-ring"
-                >
-                  Try Again
-                </button>
-              </div>
-            </div>
-          )}
-
-          {summary && (
-            <>
-              <SummaryDisplay summary={summary} />
-              
-              <div className="text-center animate-fade-in-up">
-                <button
-                  onClick={handleStartOver}
-                  className="btn-primary"
-                >
-                  Process Another Meeting
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Features Section */}
-        {!summary && !isProcessing && (
-          <div className="mt-20 animate-fade-in-up">
-            <div className="text-center mb-12">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Why Choose MeetingMind?</h3>
-              <p className="text-gray-600">Powerful AI technology that transforms how you handle meeting follow-ups</p>
-            </div>
+<Header userUsage={userUsage} isFirstTime={isFirstTime} />
+      <main className="max-w-6xl mx-auto px-6 py-8">
+        <AuthWrapper>
+          <SubscriptionHandler onUsageCheck={handleUsageCheck}>
             
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="card p-8 text-center hover:scale-[1.02] transition-smooth">
-                <div className="bg-primary-100 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
-                  <svg className="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                  </svg>
-                </div>
-                <h4 className="text-xl font-semibold text-gray-900 mb-3">Smart Transcription</h4>
-                <p className="text-gray-600 leading-relaxed">Advanced AI converts speech to text with industry-leading accuracy, handling accents and background noise</p>
-              </div>
+            {/* Welcome Header */}
+          
+            
+            {/* Smart Alerts */}
+            <SmartAlert userUsage={userUsage} />
+
+            {/* Main Content */}
+            <div className="space-y-8">
               
-              <div className="card p-8 text-center hover:scale-[1.02] transition-smooth">
-                <div className="bg-primary-100 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
-                  <svg className="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                  </svg>
+              {/* Upload Interface */}
+              {!summary && !isProcessing && (
+                <UploadZone 
+                  onFileSelect={handleFileSelect} 
+                  isProcessing={isProcessing}
+                  summaryLength={summaryLength}
+                  setSummaryLength={setSummaryLength}
+                />
+              )}
+
+              {/* Processing Display */}
+              {isProcessing && (
+                <ProcessingDisplay 
+                  processingStep={processingStep} 
+                  summaryLength={summaryLength} 
+                />
+              )}
+
+              {/* Error Display */}
+              {error && (
+                <ErrorDisplay error={error} onRetry={handleStartOver} />
+              )}
+
+              {/* Summary Results */}
+              {summary && (
+                <div className="space-y-8">
+                  <SummaryDisplay summary={summary} />
+                  <ActionHub onStartOver={handleStartOver} />
+                  <CelebrationBanner userUsage={userUsage} />
                 </div>
-                <h4 className="text-xl font-semibold text-gray-900 mb-3">Structured Summaries</h4>
-                <p className="text-gray-600 leading-relaxed">Organized sections for decisions, action items, and next steps with clear ownership and deadlines</p>
-              </div>
+              )}
               
-              <div className="card p-8 text-center hover:scale-[1.02] transition-smooth">
-                <div className="bg-primary-100 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
-                  <svg className="h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <h4 className="text-xl font-semibold text-gray-900 mb-3">Save Time</h4>
-                <p className="text-gray-600 leading-relaxed">Get comprehensive summaries in minutes instead of hours, with 95% reduction in manual note-taking</p>
-              </div>
             </div>
-          </div>
-        )}
-            </SubscriptionHandler>
-            </AuthWrapper>
+
+          </SubscriptionHandler>
+        </AuthWrapper>
       </main>
 
-      {/* Footer */}
       <footer className="bg-white border-t border-gray-200 mt-16">
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="text-center text-gray-500 text-sm">
-            <p>MeetingMind - Built with Next.js and OpenAI</p>
-            <p className="mt-2">Transform your meetings into actionable insights</p>
+        <div className="max-w-6xl mx-auto px-6 py-12">
+          <div className="text-center space-y-6">
+            {/* Logo and Title */}
+            <div className="flex items-center justify-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                <span className="text-white text-lg">🎯</span>
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+                MeetingMind
+              </span>
+            </div>
+            
+            {/* Description */}
+            <p className="text-gray-600 max-w-md mx-auto text-lg">
+              Transform your meetings into actionable insights with AI-powered summarization
+            </p>
+            
+            {/* Feature badges */}
+            <div className="flex items-center justify-center space-x-8 text-sm text-gray-500">
+              <div className="flex items-center space-x-2">
+                <span className="text-lg">⚡</span>
+                <span>Powered by OpenAI</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-lg">🔒</span>
+                <span>Secure & Private</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-lg">🚀</span>
+                <span>Built with Next.js</span>
+              </div>
+            </div>
+            
+            {/* Copyright */}
+            <div className="pt-6 border-t border-gray-200">
+              <p className="text-sm text-gray-400">
+                © 2025 MeetingMind. Transforming conversations into clarity.
+              </p>
+            </div>
           </div>
         </div>
       </footer>
