@@ -88,21 +88,67 @@ export async function POST() {
     }
 
     // Get current usage
-    const currentUsage = userUsage.get(userId) || {
-      count: 0,
-      limit: 3,
-      plan: 'free',
-      resetDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-    };
+    let user = await prisma.user.findUnique({
+      where: { clerkUserId: userId },
+      include: { usage: true }
+    });
+    if (!user) {
+      // Create new user with usage
+      user = await prisma.user.create({
+        data: {
+          clerkUserId: userId,
+          plan: 'free',
+          usage: {
+            create: {
+              count: 1,
+              limit: 3,
+              resetDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+              lastUsed: new Date()
+            }
+          }
+        },
+        include: { usage: true }
+      });
+    } else if (!user.usage) {
+      // Create usage for existing user
+      await prisma.usage.create({
+        data: {
+          userId: user.id,
+          count: 1,
+          limit: 3,
+          resetDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          lastUsed: new Date()
+        }
+      });
+      // Refetch to get updated data
+      user = await prisma.user.findUnique({
+        where: { clerkUserId: userId },
+        include: { usage: true }
+      });
+    }  else {
+      // Update existing usage
+      await prisma.usage.update({
+        where: { userId: user.id },
+        data: {
+          count: { increment: 1 },
+          lastUsed: new Date()
+        }
+      });
+      // Refetch to get updated data
+      user = await prisma.user.findUnique({
+        where: { clerkUserId: userId },
+        include: { usage: true }
+      });
+    }
 
-    // Increment usage count
     const newUsage = {
-      ...currentUsage,
-      count: currentUsage.count + 1,
-      lastUsed: new Date()
+      count: user.usage.count,
+      limit: user.usage.limit,
+      plan: user.plan,
+      resetDate: user.usage.resetDate,
+      lastUsed: user.usage.lastUsed
     };
 
-    userUsage.set(userId, newUsage);
     console.log("✅ Updated usage for user:", userId, newUsage);
     return NextResponse.json(newUsage);
   } catch (error) {
