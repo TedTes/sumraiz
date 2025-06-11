@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 // Simple in-memory storage for demo
-const userUsage = new Map();
-
 export async function GET() {
   try {
       // Try both sync and async versions of auth()
@@ -22,14 +21,49 @@ export async function GET() {
     }
 
     // Get user usage (default to free plan)
-    const usage = userUsage.get(userId) || {
-      count: 0,
-      limit: 3,
-      plan: 'free',
-      resetDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
-    };
+    let user = await prisma.user.findUnique({
+      where: { clerkUserId:userId },
+      include:{usage:true}
+    });
+    let usage = {};
+    if(!user) {
+        // Create new user first
+        user = await prisma.user.create({
+          data: {
+            clerkUserId: userId,
+            plan: 'free',
+            usage: {
+              create: {
+                count: 0,
+                limit: 3,
+                resetDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+              }
+            }
+          },
+          include: { usage: true }
+        });
+        usage = user.usage;
+    } else if (!user.usage) {
+          // Create usage record for existing user
+          usage = await prisma.usage.create({
+          data: {
+          userId: user.id,
+          count: 0,
+          limit: 3,
+          resetDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          }
+          });
+    } else {
+      usage = user.usage;
+    }
     console.log("✅ Returning usage for user:", userId, usage);
-    return NextResponse.json(usage);
+    const usageData = {
+      count: usage.count,
+      limit: usage.limit,
+      plan: user.plan,
+      resetDate: usage.resetDate
+    };
+    return NextResponse.json(usageData);
   } catch (error) {
     console.error('❌ Usage check error:', error);
     return NextResponse.json({ error: 'Failed to check usage' }, { status: 500 });
