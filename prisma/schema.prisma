@@ -1,0 +1,100 @@
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Users table - linked to Clerk user IDs
+model User {
+  id            String   @id @default(cuid())
+  clerkUserId   String   @unique // Clerk user ID
+  email         String?  
+  firstName     String?
+  lastName      String?
+  plan          String   @default("free") // "free" or "pro"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  subscription  Subscription? // One-to-One: user has one subscription
+  usage         Usage?        // One-to-One: user has one usage record
+  summaries     Summary[]     // One-to-Many: user has many summaries
+
+  @@map("users")
+}
+
+// Subscriptions table - Polar subscription tracking
+model Subscription {
+  id                    String   @id @default(cuid())
+  userId                String   @unique // One-to-One relationship
+  polarSubscriptionId   String?  @unique // Polar subscription ID
+  polarCustomerId       String?  // Polar customer ID
+  status                String   // "active", "canceled", "past_due", "unpaid"
+  plan                  String   // "pro", "enterprise", etc.
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+// Usage table - meeting summary counts and limits
+model Usage {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  count       Int      @default(0)  // Current usage count
+  limit       Int      @default(3)  // Usage limit (3 for free, unlimited for pro)
+  resetDate   DateTime             // When usage resets (monthly)
+  lastUsed    DateTime?            // Last time user created a summary
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("usage")
+}
+
+// Summaries table - track all meeting summaries created
+model Summary {
+  id            String   @id @default(cuid())
+  userId        String
+  fileName      String   // Original file name
+  fileSize      Int      // File size in bytes
+  summaryType   String   // "brief", "medium", "detailed"
+  content       String   // The actual summary content
+  processingTime Int?    // Time taken to process (in seconds)
+  createdAt     DateTime @default(now())
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("summaries")
+}
+
+// Webhooks table - payment event logging from Polar
+model Webhook {
+  id             String   @id @default(cuid())
+  eventType      String   // "checkout.completed", "subscription.created", etc.
+  eventId        String   @unique // Polar event ID (prevent duplicates)
+  data           Json     // Full webhook payload
+  processed      Boolean  @default(false)
+  processingError String? // Error message if processing failed
+  userId         String?  // Associated user (if applicable)
+  createdAt      DateTime @default(now())
+  processedAt    DateTime?
+
+  @@map("webhooks")
+}
