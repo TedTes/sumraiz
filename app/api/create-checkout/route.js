@@ -22,12 +22,10 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { priceId } = await request.json();
-
+    const priceId = process.env.POLAR_PRICE_ID;
     // Create checkout session with Polar
     const checkout = await polar.checkouts.create({
-      productPriceId: priceId,
-      customerId: userId, // Use Clerk user ID as customer ID
+      products: [priceId],
       successUrl: `${process.env.NEXT_PUBLIC_URL}/success?session_id={CHECKOUT_ID}`,
       cancelUrl: `${process.env.NEXT_PUBLIC_URL}/cancel`,
       metadata: {

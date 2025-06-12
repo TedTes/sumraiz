@@ -36,8 +36,7 @@ export default function SubscriptionHandler({ children, onUsageCheck }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          priceId: 'pro_plan', // Your Polar product ID
-          userId: user.id
+          plan:'pro'
         })
       });
       
@@ -51,6 +50,88 @@ export default function SubscriptionHandler({ children, onUsageCheck }) {
   const remaining = usage.limit - usage.count;
   const usagePercent = (usage.count / usage.limit) * 100;
 
+  if(showUpgrade) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
+        <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          
+          {/* Modal Header */}
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Crown className="h-8 w-8 text-yellow-300" />
+                <h3 className="text-2xl font-bold">Upgrade to Pro</h3>
+              </div>
+              <button 
+                onClick={() => setShowUpgrade(false)}
+                className="text-white/80 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+    
+          {/* Modal Content */}
+          <div className="p-6">
+            <div className="text-center mb-6">
+              <p className="text-gray-600 text-lg">
+                You still have {remaining} free {remaining === 1 ? 'summary' : 'summaries'} left, 
+                but why wait? Upgrade now and unlock unlimited access!
+              </p>
+            </div>
+    
+            {/* Benefits */}
+            <div className="space-y-4 mb-8">
+              <h4 className="font-bold text-lg text-gray-900">What you'll get:</h4>
+              <ul className="space-y-3">
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Unlimited meeting summaries</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Priority processing (2x faster)</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Advanced exports (PDF, Word, Email)</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Priority customer support</span>
+                </li>
+              </ul>
+            </div>
+    
+            {/* Pricing */}
+            <div className="bg-indigo-50 rounded-xl p-6 mb-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-indigo-600 mb-2">$29/month</div>
+                <p className="text-gray-600">Cancel anytime • 30-day money back guarantee</p>
+              </div>
+            </div>
+    
+            {/* Action Buttons */}
+            <div className="flex space-x-4">
+              <button 
+                onClick={() => setShowUpgrade(false)}
+                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Maybe Later
+              </button>
+              <button 
+                onClick={handleUpgrade}
+                className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+              >
+                <span>Upgrade Now</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
   // Enhanced Upgrade Modal/Screen when limit reached
   if (usage.count >= usage.limit && usage.plan === 'free') {
     return (
@@ -263,7 +344,7 @@ export default function SubscriptionHandler({ children, onUsageCheck }) {
                       : 'bg-white border-2 border-indigo-200 hover:border-indigo-300 text-indigo-600 hover:bg-indigo-50'
                   }`}
                 >
-                  <span>{remaining === 1 ? 'Upgrade Now' : 'Upgrade'}</span>
+                  <span>{remaining === 1 ? 'Upgrade Noww' : 'Upgrade'}</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>
