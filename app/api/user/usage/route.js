@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 
 import prisma from "@/lib/prisma";
 
-// Simple in-memory storage for demo
+
 export async function GET() {
   try {
       // Try both sync and async versions of auth()
