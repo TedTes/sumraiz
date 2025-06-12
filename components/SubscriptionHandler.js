@@ -15,6 +15,19 @@ export default function SubscriptionHandler({ children, onUsageCheck }) {
     }
   }, [user]);
 
+  
+const refreshUsage = async () => {
+  await checkUserUsage(); // This will fetch updated data
+};
+
+useEffect(() => {
+  // Check if user just came from success page
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('upgraded') === 'true') {
+    // Refresh usage data
+    setTimeout(refreshUsage, 1000); // Small delay for webhook to process
+  }
+}, []);
   const checkUserUsage = async () => {
     try {
       const response = await fetch('/api/user/usage');
