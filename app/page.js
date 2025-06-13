@@ -329,7 +329,7 @@ const SmartAlert = ({ userUsage }) => {
 };
 
 // Main Component
-export default function Home() {
+function HomeContent() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStep, setProcessingStep] = useState('');
@@ -523,5 +523,14 @@ export default function Home() {
     </div>
     </Suspense>
     
+  );
+}
+
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }

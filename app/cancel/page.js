@@ -2,7 +2,7 @@
 
 import { AlertCircle, ArrowLeft, RefreshCw } from 'lucide-react';
 import {Suspense} from 'react';
-export default function CancelPage() {
+function CancelContent() {
   return (
     <Suspense fallback = {<div>Loading....</div>}>
        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-slate-50 flex items-center justify-center p-6">
@@ -45,5 +45,13 @@ export default function CancelPage() {
     </div>
     </Suspense>
    
+  );
+}
+
+export default function CancelPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CancelContent />
+    </Suspense>
   );
 }

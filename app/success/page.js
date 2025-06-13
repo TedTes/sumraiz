@@ -4,7 +4,7 @@ import { useEffect, useState,Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Check, Crown, ArrowRight } from 'lucide-react';
 
-export default function SuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get('session_id');
   const [loading, setLoading] = useState(true);
@@ -80,5 +80,13 @@ export default function SuccessPage() {
     </div>
     </Suspense>
     
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SuccessContent />
+    </Suspense>
   );
 }
