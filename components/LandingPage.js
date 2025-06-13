@@ -224,7 +224,7 @@ export default function LandingPage() {
                   <span>Email support</span>
                 </li>
               </ul>
-              <SignInButton mode="modal">
+              <SignInButton mode="modal" forceRedirectUrl="/">
                 <button className="w-full border-2 border-indigo-500 text-indigo-600 py-4 rounded-xl text-lg font-semibold hover:bg-indigo-50 transition-colors group-hover:scale-105">
                   Start Free Trial
                 </button>
@@ -263,7 +263,7 @@ export default function LandingPage() {
                   <span>Priority email support</span>
                 </li>
               </ul>
-              <SignInButton mode="modal">
+              <SignInButton mode="modal" forceRedirectUrl="/?intent=pro">
                 <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-4 rounded-xl text-lg font-semibold hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl group-hover:scale-105">
                   Start Pro Trial
                 </button>
@@ -295,7 +295,7 @@ export default function LandingPage() {
             Start transforming your meetings into actionable insights.<br />
             Begin your free trial today - no credit card required.
           </p>
-          <SignInButton mode="modal">
+          <SignInButton mode="modal" forceRedirectUrl="/">
             <button className="group bg-white text-indigo-600 px-10 py-5 rounded-xl text-xl font-bold hover:bg-gray-100 transition-all duration-200 shadow-2xl hover:shadow-3xl hover:scale-105">
               <span className="flex items-center space-x-3">
                 <span>Get Started Free</span>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Header from '../components/Header';
 import FileUpload from '../components/FileUpload';
 import AuthWrapper from '../components/AuthWrapper';
@@ -9,7 +9,7 @@ import ProcessingStatus from '../components/ProcessingStatus';
 import SummaryDisplay from '../components/SummaryDisplay';
 import LandingPage from '../components/LandingPage';
 import { useUser } from '@clerk/nextjs';
-
+import { useSearchParams } from 'next/navigation';
 
 
 // Enhanced Upload Zone - File upload first, compact sidebar for settings
@@ -337,9 +337,16 @@ export default function Home() {
   const [error, setError] = useState('');
   const [userUsage, setUserUsage] = useState(null);
   const [summaryLength, setSummaryLength] = useState('brief'); 
-
+  const searchParams = useSearchParams();
+  const [showProUpgrade, setShowProUpgrade] = useState(false);
   const { isSignedIn, isLoaded } = useUser();
 
+  useEffect(() => {
+    const intent = searchParams.get('intent');
+    if (intent === 'pro') {
+      setShowProUpgrade(true);
+    }
+  }, [searchParams]);
   // Loading state
   if (!isLoaded) {
     return (
@@ -423,7 +430,7 @@ export default function Home() {
       
       <main className="max-w-6xl mx-auto px-6 py-8">
         <AuthWrapper>
-          <SubscriptionHandler onUsageCheck={handleUsageCheck}>
+          <SubscriptionHandler onUsageCheck={handleUsageCheck} showProUpgradeIntent={showProUpgrade}>
             
             {/* Smart Alerts */}
             <SmartAlert userUsage={userUsage} />

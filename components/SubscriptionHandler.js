@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Crown, Zap, AlertCircle, Sparkles, ArrowRight, TrendingUp, Star, Check } from 'lucide-react';
 
-export default function SubscriptionHandler({ children, onUsageCheck }) {
+export default function SubscriptionHandler({ children, onUsageCheck,showProUpgradeIntent }) {
   const { user } = useUser();
   const [usage, setUsage] = useState({ count: 0, limit: 3, plan: 'free' });
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -15,6 +15,11 @@ export default function SubscriptionHandler({ children, onUsageCheck }) {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (showProUpgradeIntent) {
+      setShowUpgrade(true);
+    }
+  }, [showProUpgradeIntent]);
   
 const refreshUsage = async () => {
   await checkUserUsage(); // This will fetch updated data
