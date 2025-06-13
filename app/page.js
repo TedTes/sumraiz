@@ -1,6 +1,6 @@
 'use client';
 
-import { useState,useEffect } from 'react';
+import { useState,useEffect,Suspense } from 'react';
 import Header from '../components/Header';
 import FileUpload from '../components/FileUpload';
 import AuthWrapper from '../components/AuthWrapper';
@@ -422,10 +422,10 @@ export default function Home() {
     setError('');
   };
 
-  const isFirstTime = userUsage?.count === 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Suspense fallback={<div>Loading...</div>}>
+<div className="min-h-screen bg-gray-50">
       <Header />
       
       <main className="max-w-6xl mx-auto px-6 py-8">
@@ -521,5 +521,7 @@ export default function Home() {
         </div>
       </footer>
     </div>
+    </Suspense>
+    
   );
 }
