@@ -11,74 +11,8 @@ import LandingPage from '../components/LandingPage';
 import { useUser } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
 
-// Content Type Tabs
-const ContentTypeTabs = ({ activeTab, setActiveTab }) => {
-  const tabs = [
-    {
-      key: 'meeting',
-      label: 'Meeting Audio',
-      icon: '🎙️',
-      description: 'Upload meeting recordings',
-      color: 'from-blue-500 to-indigo-600'
-    },
-    {
-      key: 'video',
-      label: 'Video Content',
-      icon: '🎬',
-      description: 'YouTube videos & recordings',
-      color: 'from-red-500 to-pink-600'
-    },
-    {
-      key: 'podcast',
-      label: 'Podcasts',
-      icon: '🎧',
-      description: 'Audio shows & episodes',
-      color: 'from-purple-500 to-violet-600'
-    }
-  ];
-
-  return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-2 mb-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
-            className={`relative p-6 rounded-xl transition-all duration-300 group ${
-              activeTab === tab.key
-                ? 'bg-gradient-to-br ' + tab.color + ' text-white shadow-lg scale-105'
-                : 'bg-gray-50 hover:bg-gray-100 text-gray-700 hover:scale-102'
-            }`}
-          >
-            <div className="flex flex-col items-center space-y-3">
-              <div className={`text-3xl transition-transform duration-200 ${
-                activeTab === tab.key ? 'scale-110' : 'group-hover:scale-105'
-              }`}>
-                {tab.icon}
-              </div>
-              <div className="text-center">
-                <div className="font-semibold text-lg">{tab.label}</div>
-                <div className={`text-sm ${
-                  activeTab === tab.key ? 'text-white/80' : 'text-gray-500'
-                }`}>
-                  {tab.description}
-                </div>
-              </div>
-            </div>
-            
-            {activeTab === tab.key && (
-              <div className="absolute inset-0 rounded-xl bg-white/20 pointer-events-none"></div>
-            )}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// Upload Zone with content-specific features
+// Enhanced Upload Zone with unified content type and compact summary style
 const UnifiedUploadZone = ({ 
-  activeTab, 
   onFileSelect, 
   onUrlSubmit, 
   isProcessing, 
@@ -87,228 +21,121 @@ const UnifiedUploadZone = ({
 }) => {
   const [urlInput, setUrlInput] = useState('');
   
-  const getContentConfig = () => {
-    const configs = {
-      meeting: {
-        title: 'Upload Meeting Recording',
-        subtitle: 'Transform meeting discussions into actionable insights',
-        acceptedFormats: ['MP3', 'M4A', 'WAV', 'WebM', 'MP4'],
-        placeholderText: 'Drop your meeting recording here',
-        features: ['Speaker identification', 'Action items', 'Decisions tracking', 'Follow-ups'],
-        color: 'from-blue-50 to-indigo-50',
-        borderColor: 'border-blue-200'
-      },
-      video: {
-        title: 'Process Video Content',
-        subtitle: 'Extract insights from YouTube videos and recordings',
-        acceptedFormats: ['MP4', 'WebM', 'MOV', 'AVI'],
-        placeholderText: 'Drop video file or paste YouTube URL',
-        features: ['Timestamp navigation', 'Key moments', 'Visual cues', 'Chapter detection'],
-        color: 'from-red-50 to-pink-50',
-        borderColor: 'border-red-200'
-      },
-      podcast: {
-        title: 'Analyze Podcast Content',
-        subtitle: 'Get insights from podcast episodes and audio shows',
-        acceptedFormats: ['MP3', 'M4A', 'WAV', 'OGG'],
-        placeholderText: 'Drop podcast file or paste episode URL',
-        features: ['Episode insights', 'Guest highlights', 'Topic threading', 'Series context'],
-        color: 'from-purple-50 to-violet-50',
-        borderColor: 'border-purple-200'
-      }
-    };
-    return configs[activeTab];
-  };
-
-  const config = getContentConfig();
-
   const handleUrlSubmit = (e) => {
     e.preventDefault();
     if (urlInput.trim()) {
-      onUrlSubmit(urlInput.trim(), activeTab);
+      onUrlSubmit(urlInput.trim(), 'media'); // Single content type
       setUrlInput('');
     }
   };
 
   return (
     <div className="bg-white rounded-3xl border border-gray-200 shadow-lg overflow-hidden">
-      <div className="grid grid-cols-1 lg:grid-cols-4 min-h-[650px]">
+      <div className="grid grid-cols-1 lg:grid-cols-4 min-h-[500px]">
         
-        {/* Left Sidebar - Summary Style & Content Options */}
-        <div className={`lg:col-span-1 bg-gradient-to-br ${config.color} border-r ${config.borderColor}`}>
+        {/* Left Sidebar - Summary Style Only */}
+        <div className="lg:col-span-1 bg-gradient-to-br from-blue-50 to-indigo-50 border-r border-blue-200">
           <div className="p-6 space-y-6">
             
-            {/* Summary Style Selection */}
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
-                <span className="text-white text-sm">⚙️</span>
+            {/* Summary Style Selection - Compact Version */}
+            <div>
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-md">
+                  <span className="text-white text-sm">⚙️</span>
+                </div>
+                <h3 className="text-lg font-bold text-gray-800">Summary Style</h3>
               </div>
-              <h3 className="text-lg font-bold text-gray-800">Summary Style</h3>
-            </div>
-            
-            <div className="space-y-3">
-              {[
-                { 
-                  key: 'brief', 
-                  label: 'Quick Brief', 
-                  desc: '1-2 min read', 
-                  icon: '⚡', 
-                  bgColor: 'from-emerald-400 to-green-500',
-                  features: ['Key points', 'Action items', 'Quick scan']
-                },
-                { 
-                  key: 'medium', 
-                  label: 'Balanced', 
-                  desc: '3-4 min read', 
-                  icon: '📊', 
-                  bgColor: 'from-blue-400 to-indigo-500',
-                  features: ['Detailed insights', 'Context', 'Decisions']
-                },
-                { 
-                  key: 'detailed', 
-                  label: 'Comprehensive', 
-                  desc: '5+ min read', 
-                  icon: '📖', 
-                  bgColor: 'from-purple-400 to-pink-500',
-                  features: ['Full analysis', 'Quotes', 'Deep insights']
-                }
-              ].map((option) => (
-                <div key={option.key} className="relative">
+              
+              <div className="space-y-2">
+                {[
+                  { 
+                    key: 'brief', 
+                    label: 'Quick Brief', 
+                    desc: '1-2 min read', 
+                    icon: '⚡'
+                  },
+                  { 
+                    key: 'medium', 
+                    label: 'Balanced', 
+                    desc: '3-4 min read', 
+                    icon: '📊'
+                  },
+                  { 
+                    key: 'detailed', 
+                    label: 'Comprehensive', 
+                    desc: '5+ min read', 
+                    icon: '📖'
+                  }
+                ].map((option) => (
                   <button
+                    key={option.key}
                     onClick={() => setSummaryLength(option.key)}
-                    className={`w-full p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 ${
+                    className={`w-full p-3 rounded-xl border-2 transition-all duration-200 ${
                       summaryLength === option.key
-                        ? 'border-indigo-300 bg-white shadow-lg scale-105'
-                        : 'border-transparent bg-white/70 hover:bg-white/90 hover:shadow-md'
+                        ? 'border-indigo-300 bg-white shadow-md'
+                        : 'border-transparent bg-white/70 hover:bg-white/90'
                     }`}
                   >
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                         summaryLength === option.key 
-                          ? `bg-gradient-to-br ${option.bgColor} text-white shadow-md` 
+                          ? 'bg-indigo-500 text-white' 
                           : 'bg-gray-100 text-gray-600'
                       }`}>
-                        <span className="text-lg">{option.icon}</span>
+                        <span className="text-sm">{option.icon}</span>
                       </div>
                       <div className="flex-1 text-left">
-                        <div className={`font-semibold ${summaryLength === option.key ? 'text-indigo-700' : 'text-gray-700'}`}>
+                        <div className={`font-medium text-sm ${summaryLength === option.key ? 'text-indigo-700' : 'text-gray-700'}`}>
                           {option.label}
                         </div>
-                        <div className="text-sm text-gray-500">{option.desc}</div>
+                        <div className="text-xs text-gray-500">{option.desc}</div>
                       </div>
                       {summaryLength === option.key && (
-                        <div className="w-5 h-5 bg-indigo-500 rounded-full flex items-center justify-center">
+                        <div className="w-4 h-4 bg-indigo-500 rounded-full flex items-center justify-center">
                           <span className="text-white text-xs">✓</span>
                         </div>
                       )}
                     </div>
-                    
-                    <div className="flex flex-wrap gap-1">
-                      {option.features.map((feature, idx) => (
-                        <span
-                          key={idx}
-                          className={`text-xs px-2 py-1 rounded-full ${
-                            summaryLength === option.key
-                              ? 'bg-indigo-100 text-indigo-700'
-                              : 'bg-gray-100 text-gray-600'
-                          }`}
-                        >
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
                   </button>
-                </div>
-              ))}
-            </div>
-
-            {/* Content-Specific Features */}
-            <div className="mt-8 p-4 bg-white/80 rounded-xl border border-white/50">
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">
-                {activeTab === 'meeting' ? 'Meeting Features' : 
-                 activeTab === 'video' ? 'Video Features' : 'Podcast Features'}
-              </h4>
-              <div className="space-y-2 text-xs text-gray-600">
-                {config.features.map((feature, idx) => (
-                  <div key={idx} className="flex items-center space-x-2">
-                    <span className="text-green-500">✓</span>
-                    <span>{feature}</span>
-                  </div>
                 ))}
               </div>
             </div>
+
+
           </div>
         </div>
 
         {/* Main Content Area */}
         <div className="lg:col-span-3 relative">
           <div className="p-8 h-full flex flex-col">
-            
-            {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-800">{config.title}</h2>
-                  <p className="text-gray-600">{config.subtitle}</p>
+            {/* URL Input */}
+            <div className="mb-6">
+              <form onSubmit={handleUrlSubmit} className="flex gap-3">
+                <div className="flex-1 relative">
+                  <input
+                    type="url"
+                    value={urlInput}
+                    onChange={(e) => setUrlInput(e.target.value)}
+                    placeholder="Paste YouTube URL or media link (e.g., https://youtube.com/watch?v=...)"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
                 </div>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                  <span>AI Ready</span>
-                </div>
-              </div>
-              
-              {/* Smart Tips Bar */}
-              <div className="flex items-center space-x-6 text-sm text-gray-600 bg-blue-50 rounded-xl p-4">
-                <div className="flex items-center space-x-2">
-                  <span className="text-blue-500">💡</span>
-                  <span><strong>Pro tip:</strong> {
-                    activeTab === 'meeting' ? '10-60 min recordings work best' :
-                    activeTab === 'video' ? 'YouTube URLs and video files supported' :
-                    'Podcast episodes 15-180 min ideal'
-                  }</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-green-500">🎯</span>
-                  <span>Supports {config.acceptedFormats.join(', ')}</span>
-                </div>
-              </div>
+                <button
+                  type="submit"
+                  disabled={!urlInput.trim() || isProcessing}
+                  className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Process URL
+                </button>
+              </form>
             </div>
 
-            {/* URL Input for Video/Podcast */}
-            {(activeTab === 'video' || activeTab === 'podcast') && (
-              <div className="mb-6">
-                <form onSubmit={handleUrlSubmit} className="flex gap-3">
-                  <div className="flex-1 relative">
-                    <input
-                      type="url"
-                      value={urlInput}
-                      onChange={(e) => setUrlInput(e.target.value)}
-                      placeholder={
-                        activeTab === 'video' ? 'Paste YouTube URL (e.g., https://youtube.com/watch?v=...)' :
-                        'Paste podcast episode URL or RSS feed'
-                      }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={!urlInput.trim() || isProcessing}
-                    className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Process URL
-                  </button>
-                </form>
-              </div>
-            )}
-
             {/* Divider */}
-            {(activeTab === 'video' || activeTab === 'podcast') && (
-              <div className="flex items-center mb-6">
-                <div className="flex-1 h-px bg-gray-200"></div>
-                <span className="px-4 text-sm text-gray-500">or upload file</span>
-                <div className="flex-1 h-px bg-gray-200"></div>
-              </div>
-            )}
+            <div className="flex items-center mb-6">
+              <div className="flex-1 h-px bg-gray-200"></div>
+              <span className="px-4 text-sm text-gray-500">or upload file</span>
+              <div className="flex-1 h-px bg-gray-200"></div>
+            </div>
 
             {/* File Upload */}
             <div className="flex-1 flex items-center justify-center">
@@ -316,75 +143,21 @@ const UnifiedUploadZone = ({
                 <FileUpload 
                   onFileSelect={onFileSelect} 
                   isProcessing={isProcessing}
-                  acceptedTypes={config.acceptedFormats}
-                  placeholderText={config.placeholderText}
+                  acceptedTypes={['MP3', 'M4A', 'WAV', 'WebM', 'MP4', 'MOV']}
+                  placeholderText="Drop your audio or video file here"
                 />
               </div>
             </div>
 
-            {/* Processing Preview */}
-            <div className="mt-8 grid grid-cols-3 gap-4">
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-sm">
-                      {activeTab === 'meeting' ? '🎵' : activeTab === 'video' ? '📹' : '🎧'}
-                    </span>
-                  </div>
-                  <div>
-                    <div className="font-medium text-blue-800">Extract</div>
-                    <div className="text-xs text-blue-600">
-                      {activeTab === 'meeting' ? 'Audio transcription' : 
-                       activeTab === 'video' ? 'Video processing' : 'Audio analysis'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-sm">🧠</span>
-                  </div>
-                  <div>
-                    <div className="font-medium text-purple-800">Analyze</div>
-                    <div className="text-xs text-purple-600">AI intelligence</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-4 border border-emerald-100">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-sm">📝</span>
-                  </div>
-                  <div>
-                    <div className="font-medium text-emerald-800">Summarize</div>
-                    <div className="text-xs text-emerald-600">Smart insights</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+
           </div>
 
-          {/* Floating Content Type Indicator */}
-          <div className="absolute top-6 right-6">
-            <div className="bg-white rounded-full p-3 shadow-lg border border-gray-200">
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">
-                  {activeTab === 'meeting' ? '🎙️' : activeTab === 'video' ? '🎬' : '🎧'}
-                </span>
-                <span className="text-xs font-medium text-gray-600 capitalize">{activeTab} Mode</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
   );
 };
-
-// Processing Display with content-specific progress
+// Enhanced Processing Display with content-specific progress
 const UnifiedProcessingDisplay = ({ processingStep, summaryLength, contentType }) => {
   const getProcessingMessages = () => {
     const messages = {
@@ -512,8 +285,8 @@ const UnifiedProcessingDisplay = ({ processingStep, summaryLength, contentType }
   );
 };
 
-// Action Hub with content-specific actions
-const ActionHub = ({ onStartOver, summary, contentType }) => {
+// Enhanced Action Hub with content-specific actions
+const EnhancedActionHub = ({ onStartOver, summary, contentType }) => {
   const getActionConfig = () => {
     const configs = {
       meeting: {
@@ -696,7 +469,7 @@ const SmartAlert = ({ userUsage }) => {
   return null;
 };
 
-// Main Content
+// Main Content Hub - Core MVP functionality only
 function HomeContent() {
   const [activeTab, setActiveTab] = useState('meeting');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -857,9 +630,6 @@ function HomeContent() {
               {/* Smart Alerts */}
               <SmartAlert userUsage={userUsage} />
 
-              {/* Content Type Tabs */}
-              <ContentTypeTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-
               {/* Main Content */}
               <div className="space-y-12">
                 
@@ -867,6 +637,7 @@ function HomeContent() {
                 {!summary && !isProcessing && (
                   <UnifiedUploadZone 
                     activeTab={activeTab}
+                    setActiveTab={setActiveTab}
                     onFileSelect={handleFileSelect}
                     onUrlSubmit={handleUrlSubmit}
                     isProcessing={isProcessing}
@@ -893,7 +664,7 @@ function HomeContent() {
                 {summary && (
                   <div className="space-y-12">
                     <SummaryDisplay summary={summary} contentType={activeTab} />
-                    <ActionHub 
+                    <EnhancedActionHub 
                       onStartOver={handleStartOver} 
                       summary={summary} 
                       contentType={activeTab}

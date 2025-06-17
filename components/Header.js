@@ -1,6 +1,7 @@
 import { Brain, Sparkles } from 'lucide-react';
 import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
+import { HeaderSubscriptionIndicator } from './SubscriptionHandler';
 
 export default function Header() {
   const { isSignedIn, user } = useUser();
@@ -62,6 +63,8 @@ export default function Header() {
             {isSignedIn ? (
               <div className="flex items-center space-x-4">
                 
+ 
+                <HeaderSubscriptionIndicator />
   
                 <div className="hidden sm:block text-right">
                   <div className="text-sm font-medium text-gray-800">
@@ -89,8 +92,8 @@ export default function Header() {
                 </div>
               </div>
             ) : (
-
               <div className="flex items-center space-x-3">
+                
                 {/* Sign In Button */}
                 <SignInButton mode="modal">
                   <button className="group relative bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 overflow-hidden">
@@ -141,13 +144,16 @@ export const CompactHeader = () => {
           </div>
           
           {isSignedIn && (
-            <UserButton 
-              appearance={{
-                elements: {
-                  avatarBox: "h-8 w-8"
-                }
-              }}
-            />
+            <div className="flex items-center space-x-3">
+              <HeaderSubscriptionIndicator />
+              <UserButton 
+                appearance={{
+                  elements: {
+                    avatarBox: "h-8 w-8"
+                  }
+                }}
+              />
+            </div>
           )}
         </div>
       </div>

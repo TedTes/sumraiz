@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { Crown, Zap, AlertCircle, Sparkles, ArrowRight, TrendingUp, Star, Check } from 'lucide-react';
+import { Crown, Zap, AlertCircle, Sparkles, ArrowRight, TrendingUp, Star, Check, X, ChevronDown, ChevronUp } from 'lucide-react';
 
-export default function SubscriptionHandler({ children, onUsageCheck,showProUpgradeIntent }) {
+export default function SubscriptionHandler({ children, onUsageCheck, showProUpgradeIntent }) {
   const { user } = useUser();
   const [usage, setUsage] = useState({ count: 0, limit: 3, plan: 'free' });
   const [showUpgrade, setShowUpgrade] = useState(false);
@@ -20,29 +20,36 @@ export default function SubscriptionHandler({ children, onUsageCheck,showProUpgr
       setShowUpgrade(true);
     }
   }, [showProUpgradeIntent]);
-  
-const refreshUsage = async () => {
-  await checkUserUsage(); // This will fetch updated data
-};
 
-useEffect(() => {
-  // Check if user just came from success page
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('upgraded') === 'true') {
-    // Refresh usage data
-    setTimeout(refreshUsage, 1000); // Small delay for webhook to process
-  }
-}, []);
+  const refreshUsage = async () => {
+    await checkUserUsage();
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('upgraded') === 'true') {
+      setTimeout(refreshUsage, 1000);
+    }
+  }, []);
+
   const checkUserUsage = async () => {
     try {
       const response = await fetch('/api/user/usage');
       const data = await response.json();
       setUsage(data);
       
-      // Notify parent component
       if (onUsageCheck) {
         onUsageCheck(data);
       }
+
+      // Also dispatch custom event for header to listen to
+      window.dispatchEvent(new CustomEvent('usageUpdate', { 
+        detail: { 
+          usage: data,
+          remaining: data.limit - data.count,
+          usagePercent: (data.count / data.limit) * 100
+        } 
+      }));
     } catch (error) {
       console.error('Failed to check usage:', error);
     }
@@ -53,9 +60,7 @@ useEffect(() => {
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plan:'pro'
-        })
+        body: JSON.stringify({ plan: 'pro' })
       });
       
       const { checkoutUrl } = await response.json();
@@ -66,14 +71,12 @@ useEffect(() => {
   };
 
   const remaining = usage.limit - usage.count;
-  const usagePercent = (usage.count / usage.limit) * 100;
 
-  if(showUpgrade) {
+  // Full-screen upgrade modal
+  if (showUpgrade) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
         <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          
-          {/* Modal Header */}
           <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -88,8 +91,7 @@ useEffect(() => {
               </button>
             </div>
           </div>
-    
-          {/* Modal Content */}
+          
           <div className="p-6">
             <div className="text-center mb-6">
               <p className="text-gray-600 text-lg">
@@ -97,8 +99,7 @@ useEffect(() => {
                 but why wait? Upgrade now and unlock unlimited access!
               </p>
             </div>
-    
-            {/* Benefits */}
+            
             <div className="space-y-4 mb-8">
               <h4 className="font-bold text-lg text-gray-900">What you'll get:</h4>
               <ul className="space-y-3">
@@ -120,16 +121,14 @@ useEffect(() => {
                 </li>
               </ul>
             </div>
-    
-            {/* Pricing */}
+            
             <div className="bg-indigo-50 rounded-xl p-6 mb-6">
               <div className="text-center">
                 <div className="text-3xl font-bold text-indigo-600 mb-2">$29/month</div>
                 <p className="text-gray-600">Cancel anytime • 30-day money back guarantee</p>
               </div>
             </div>
-    
-            {/* Action Buttons */}
+            
             <div className="flex space-x-4">
               <button 
                 onClick={() => setShowUpgrade(false)}
@@ -148,18 +147,15 @@ useEffect(() => {
           </div>
         </div>
       </div>
-    )
+    );
   }
-  // Enhanced Upgrade Modal/Screen when limit reached
+
+  // Full-screen upgrade when limit reached
   if (usage.count >= usage.limit && usage.plan === 'free') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-6">
         <div className="max-w-4xl w-full">
-          
-          {/* Main upgrade card */}
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-            
-            {/* Header with gradient */}
             <div className="bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 p-8 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
                 <div className="w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
@@ -172,22 +168,15 @@ useEffect(() => {
                 <div className="bg-white/20 backdrop-blur-sm w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <Crown className="h-10 w-10 text-yellow-300" />
                 </div>
-                <h2 className="text-4xl font-bold mb-4">
-                  🎉 Trial Complete!
-                </h2>
+                <h2 className="text-4xl font-bold mb-4">🎉 Trial Complete!</h2>
                 <p className="text-xl text-indigo-100 mb-2">
                   You've processed {usage.count} meetings successfully
                 </p>
-                <p className="text-lg text-indigo-200">
-                  Ready to unlock unlimited access?
-                </p>
+                <p className="text-lg text-indigo-200">Ready to unlock unlimited access?</p>
               </div>
             </div>
 
-            {/* Content */}
             <div className="p-8">
-              
-              {/* Stats showcase */}
               <div className="grid grid-cols-3 gap-4 mb-8">
                 <div className="text-center bg-emerald-50 rounded-xl p-4">
                   <div className="text-2xl font-bold text-emerald-600">{usage.count}</div>
@@ -203,10 +192,7 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Pricing comparison */}
               <div className="grid md:grid-cols-2 gap-6 mb-8">
-                
-                {/* Free plan (current) */}
                 <div className="border-2 border-gray-200 rounded-2xl p-6 relative">
                   <div className="absolute -top-3 left-4 bg-gray-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                     Current Plan
@@ -232,7 +218,6 @@ useEffect(() => {
                   </div>
                 </div>
 
-                {/* Pro plan */}
                 <div className="border-2 border-indigo-300 bg-indigo-50 rounded-2xl p-6 relative transform scale-105">
                   <div className="absolute -top-3 left-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-bold flex items-center space-x-1">
                     <Star className="h-4 w-4" />
@@ -275,7 +260,6 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Trust indicators */}
               <div className="text-center space-y-3">
                 <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
                   <span className="flex items-center space-x-1">
@@ -302,76 +286,111 @@ useEffect(() => {
     );
   }
 
-  // Enhanced usage indicator for active users
-  return (
-    <div>
-      {usage.plan === 'free' && remaining > 0 && (
-        <div className="max-w-6xl mx-auto mb-6">
-          <div className={`rounded-2xl p-4 transition-all duration-300 ${
-            remaining === 1 
-              ? 'bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200' 
-              : 'bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200'
-          }`}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className={`p-3 rounded-xl ${
-                  remaining === 1 ? 'bg-amber-100' : 'bg-indigo-100'
-                }`}>
-                  {remaining === 1 ? (
-                    <AlertCircle className="h-6 w-6 text-amber-600" />
-                  ) : (
-                    <Sparkles className="h-6 w-6 text-indigo-600" />
-                  )}
-                </div>
-                <div>
-                  <div className="font-bold text-gray-900 text-lg">
-                    {remaining === 1 ? 'Last Free Summary!' : `${remaining} Free Summaries Left`}
-                  </div>
-                  <div className="text-gray-600">
-                    {remaining === 1 
-                      ? 'Make it count, then unlock unlimited access' 
-                      : 'Upgrade anytime for unlimited processing'
-                    }
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                {/* Progress indicator */}
-                <div className="hidden sm:block">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <span className="text-sm font-medium text-gray-700">{usage.count}/{usage.limit}</span>
-                  </div>
-                  <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        remaining === 1 
-                          ? 'bg-gradient-to-r from-amber-400 to-orange-500' 
-                          : 'bg-gradient-to-r from-indigo-500 to-purple-600'
-                      }`}
-                      style={{ width: `${usagePercent}%` }}
-                    ></div>
-                  </div>
-                </div>
-                
-                <button 
-                  onClick={() => setShowUpgrade(true)}
-                  className={`font-medium px-6 py-3 rounded-xl transition-all duration-200 hover:scale-105 flex items-center space-x-2 ${
-                    remaining === 1 
-                      ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg'
-                      : 'bg-white border-2 border-indigo-200 hover:border-indigo-300 text-indigo-600 hover:bg-indigo-50'
-                  }`}
-                >
-                  <span>{remaining === 1 ? 'Upgrade Noww' : 'Upgrade'}</span>
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+  // Normal case - just render children (no banners in body)
+  return <div>{children}</div>;
+}
+
+
+export const HeaderSubscriptionIndicator = () => {
+  const [subscriptionData, setSubscriptionData] = useState(null);
+  
+  useEffect(() => {
+    const handleUsageUpdate = (event) => {
+      const { usage, remaining } = event.detail;
+      // Only show for free plan users with remaining summaries
+      if (usage.plan === 'free' && remaining > 0) {
+        setSubscriptionData({
+          remaining,
+          isLastSummary: remaining === 1
+        });
+      } else {
+        // Hide component for Pro users or when trial is exhausted
+        setSubscriptionData(null);
+      }
+    };
+
+    window.addEventListener('usageUpdate', handleUsageUpdate);
+    return () => window.removeEventListener('usageUpdate', handleUsageUpdate);
+  }, []);
+
+  const handleUpgrade = async () => {
+    try {
+      const response = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: 'pro' })
+      });
       
-      {children}
+      const { checkoutUrl } = await response.json();
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      console.error('Failed to create checkout:', error);
+    }
+  };
+  
+  // Component will not render (return null) in these cases:
+  // 1. User is on Pro plan (usage.plan !== 'free')
+  // 2. User has no remaining free summaries (remaining <= 0)
+  // 3. No subscription data available
+  if (!subscriptionData) return null;
+  
+  const { isLastSummary } = subscriptionData;
+  
+  return (
+    <>
+      {/* Desktop/Tablet Version - Button */}
+      <button 
+        onClick={handleUpgrade}
+        className={`hidden sm:flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105 ${
+          isLastSummary 
+            ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-sm'
+            : 'bg-indigo-500 hover:bg-indigo-600 text-white shadow-sm'
+        }`}
+      >
+        <Crown className="h-4 w-4 mr-1.5" />
+        Upgrade to Pro
+      </button>
+
+      {/* Mobile Version - Subtle Link */}
+      <div className="sm:hidden">
+        <button 
+          onClick={handleUpgrade}
+          className={`text-xs font-medium transition-colors ${
+            isLastSummary 
+              ? 'text-amber-600 hover:text-amber-700'
+              : 'text-indigo-600 hover:text-indigo-700'
+          }`}
+        >
+          Upgrade to Pro
+        </button>
+      </div>
+    </>
+  );
+};
+
+//  Pro User Status Indicator (shows after upgrade)
+export const ProUserIndicator = () => {
+  const [isProUser, setIsProUser] = useState(false);
+  
+  useEffect(() => {
+    const handleUsageUpdate = (event) => {
+      const { usage } = event.detail;
+      setIsProUser(usage.plan === 'pro');
+    };
+
+    window.addEventListener('usageUpdate', handleUsageUpdate);
+    return () => window.removeEventListener('usageUpdate', handleUsageUpdate);
+  }, []);
+  
+  if (!isProUser) return null;
+  
+  return (
+    <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1.5 px-2 py-1 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-full border border-emerald-200">
+        <Crown className="h-3 w-3 text-emerald-600" />
+        <span className="text-xs font-medium text-emerald-700">Pro</span>
+      </div>
     </div>
   );
-}
+};
+

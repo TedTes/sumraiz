@@ -156,14 +156,48 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/*  Features */}
+      {/* Smart Features Showcase */}
       <section className="py-20 bg-gradient-to-br from-gray-50 to-indigo-50">  
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold text-gray-900 mb-4">Why Choose MeetingMind?</h3>
-            <p className="text-xl text-gray-600">Built for teams who value their time and productivity</p>
+            <h3 className="text-4xl font-bold text-gray-900 mb-4">Powerful AI Features</h3>
+            <p className="text-xl text-gray-600">Advanced capabilities that make your meetings actionable</p>
           </div>
           
+          {/* Green highlighted features box */}
+          <div className="max-w-md mx-auto mb-16">
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-green-400">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                  <span className="text-green-600 text-sm">✨</span>
+                </div>
+                <h4 className="text-lg font-bold text-gray-800">Smart Features</h4>
+              </div>
+              <div className="space-y-3 text-sm text-gray-700">
+                <div className="flex items-center space-x-3">
+                  <span className="text-green-500 font-bold">✓</span>
+                  <span>Speaker identification</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-green-500 font-bold">✓</span>
+                  <span>Key moments detection</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-green-500 font-bold">✓</span>
+                  <span>Action items extraction</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-green-500 font-bold">✓</span>
+                  <span>Topic analysis</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-green-500 font-bold">✓</span>
+                  <span>Timestamp navigation</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
               <div className="bg-gradient-to-br from-indigo-100 to-purple-100 w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
