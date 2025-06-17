@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { Upload, FileAudio, X, CheckCircle2 } from 'lucide-react';
 
-export default function FileUpload({ onFileSelect, isProcessing }) {
+export default function FileUpload({ onFileSelect, isProcessing ,acceptedTypes,placeholderText}) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -103,7 +103,7 @@ export default function FileUpload({ onFileSelect, isProcessing }) {
             
             <div className="text-center space-y-3">
               <h3 className="text-2xl font-bold text-gray-900">
-                Drop your meeting recording here
+                {placeholderText}
               </h3>
               <p className="text-lg text-gray-600">
                 or click to browse files
@@ -111,7 +111,7 @@ export default function FileUpload({ onFileSelect, isProcessing }) {
               
               {/* Enhanced file type display */}
               <div className="flex flex-wrap justify-center gap-2 mt-4">
-                {['MP3', 'M4A', 'WAV', 'WebM', 'MP4'].map((format) => (
+                {acceptedTypes.map((format) => (
                   <span key={format} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
                     {format}
                   </span>
