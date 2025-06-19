@@ -24,11 +24,266 @@ import {
   ChevronUp
 } from 'lucide-react';
 
+
+const FloatingSettingsBar = ({ 
+  summaryLength, 
+  setSummaryLength,
+  selectedModels,
+  setSelectedModels,
+  analysisMode,
+  setAnalysisMode,
+  sidebarCollapsed = false
+}) => {
+  const [activePanel, setActivePanel] = useState(null);
+  const [hoveredButton, setHoveredButton] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+    // Track window size changes
+    useEffect(() => {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth < 1024);
+      };
+      
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+  const settingsButtons = [
+    {
+      id: 'output',
+      icon: Target,
+      color: 'emerald',
+      title: 'Output Style',
+      current: summaryLength === 'brief' ? 'Quick Brief' : 
+               summaryLength === 'medium' ? 'Balanced' : 'Comprehensive'
+    },
+    {
+      id: 'models',
+      icon: Bot,
+      color: 'indigo',
+      title: 'AI Models',
+      current: `${selectedModels.length} model${selectedModels.length !== 1 ? 's' : ''} selected`
+    },
+    {
+      id: 'language',
+      icon: Globe,
+      color: 'blue',
+      title: 'Language',
+      current: 'English'
+    },
+    {
+      id: 'export',
+      icon: FileText,
+      color: 'purple',
+      title: 'Export Format',
+      current: 'PDF Document'
+    }
+  ];
+
+  const renderPanel = () => {
+    if (!activePanel) return null;
+
+    const panelContent = {
+      output: (
+        <div className="p-4 space-y-3">
+          <h4 className="font-medium text-gray-800 text-sm">Output Style</h4>
+          {['brief', 'medium', 'detailed'].map((option) => (
+            <button
+              key={option}
+              onClick={() => {
+                setSummaryLength(option);
+                setActivePanel(null);
+              }}
+              className={`w-full text-left p-3 rounded-lg text-sm transition-colors ${
+                summaryLength === option 
+                  ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
+                  : 'bg-gray-50 hover:bg-gray-100'
+              }`}
+            >
+              {option === 'brief' && '⚡ Quick Brief (1-2 min read)'}
+              {option === 'medium' && '📊 Balanced (3-4 min read)'}
+              {option === 'detailed' && '📖 Comprehensive (5+ min read)'}
+            </button>
+          ))}
+        </div>
+      ),
+      models: (
+        <div className="p-4 space-y-3">
+          <h4 className="font-medium text-gray-800 text-sm">AI Models</h4>
+          {[
+            { id: 'gpt-4', name: 'GPT-4', icon: '🤖', provider: 'OpenAI' },
+            { id: 'claude-3-sonnet', name: 'Claude 3 Sonnet', icon: '🧠', provider: 'Anthropic' },
+            { id: 'gemini-pro', name: 'Gemini Pro', icon: '✨', provider: 'Google' },
+            { id: 'llama-2-70b', name: 'Llama 2 70B', icon: '🦙', provider: 'Meta' }
+          ].map((model) => (
+            <label
+              key={model.id}
+              className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                checked={selectedModels.includes(model.id)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedModels(prev => [...prev, model.id]);
+                  } else {
+                    setSelectedModels(prev => prev.filter(id => id !== model.id));
+                  }
+                }}
+                className="w-4 h-4 text-indigo-600 rounded"
+              />
+              <span className="text-lg">{model.icon}</span>
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-800">{model.name}</div>
+                <div className="text-xs text-gray-500">{model.provider}</div>
+              </div>
+            </label>
+          ))}
+        </div>
+      ),
+      language: (
+        <div className="p-4 space-y-3">
+          <h4 className="font-medium text-gray-800 text-sm">Language</h4>
+          {[
+            { value: 'en', label: '🇺🇸 English' },
+            { value: 'es', label: '🇪🇸 Spanish' },
+            { value: 'fr', label: '🇫🇷 French' },
+            { value: 'de', label: '🇩🇪 German' },
+            { value: 'zh', label: '🇨🇳 Chinese' },
+            { value: 'ja', label: '🇯🇵 Japanese' }
+          ].map((lang) => (
+            <button
+              key={lang.value}
+              onClick={() => setActivePanel(null)}
+              className="w-full text-left p-3 rounded-lg text-sm bg-gray-50 hover:bg-gray-100 transition-colors"
+            >
+              {lang.label}
+            </button>
+          ))}
+        </div>
+      ),
+      export: (
+        <div className="p-4 space-y-3">
+          <h4 className="font-medium text-gray-800 text-sm">Export Format</h4>
+          {[
+            { value: 'pdf', label: '📄 PDF Document' },
+            { value: 'word', label: '📝 Word Document' },
+            { value: 'text', label: '📋 Plain Text' },
+            { value: 'email', label: '📧 Email Template' },
+            { value: 'markdown', label: '📋 Markdown' }
+          ].map((format) => (
+            <button
+              key={format.value}
+              onClick={() => setActivePanel(null)}
+              className="w-full text-left p-3 rounded-lg text-sm bg-gray-50 hover:bg-gray-100 transition-colors"
+            >
+              {format.label}
+            </button>
+          ))}
+        </div>
+      )
+    };
+
+    return (
+      <div className="fixed left-20 top-32 z-50">
+        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200 w-64 max-h-80 overflow-y-auto">
+          {panelContent[activePanel]}
+        </div>
+      </div>
+    );
+  };
+
+  const renderTooltip = () => {
+    if (!hoveredButton) return null;
+    
+    const button = settingsButtons.find(b => b.id === hoveredButton);
+    if (!button) return null;
+
+    return (
+      <div className="fixed left-20 top-32 z-50 pointer-events-none">
+        <div className="bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+          <div className="font-semibold">{button.title}</div>
+          <div className="text-gray-300 text-xs mt-1">{button.current}</div>
+        </div>
+      </div>
+    );
+  };
+
+  // Show floating bar on mobile OR when sidebar is collapsed on desktop
+  const shouldShowFloatingBar = isMobile || sidebarCollapsed;
+
+  if (!shouldShowFloatingBar) return null;
+
+  return (
+    <>
+      {/* Floating Settings Bar - Mobile + Collapsed Desktop */}
+      <div className="fixed left-4 top-32 z-40">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200 p-2 space-y-3">
+          {settingsButtons.map((button) => {
+            const IconComponent = button.icon;
+            const isActive = activePanel === button.id;
+            
+            return (
+              <button
+                key={button.id}
+                onClick={() => setActivePanel(isActive ? null : button.id)}
+                onMouseEnter={() => setHoveredButton(button.id)}
+                onMouseLeave={() => setHoveredButton(null)}
+                className={`
+                  relative w-12 h-12 rounded-xl flex items-center justify-center 
+                  transition-all duration-300 hover:scale-110 group
+                  ${isActive 
+                    ? `bg-${button.color}-500 shadow-lg` 
+                    : `bg-${button.color}-100 hover:bg-${button.color}-200`
+                  }
+                `}
+                title={button.title}
+              >
+                <IconComponent 
+                  className={`h-5 w-5 transition-colors ${
+                    isActive 
+                      ? 'text-white' 
+                      : `text-${button.color}-600`
+                  }`} 
+                />
+                
+                {/* Status indicator for models */}
+                {button.id === 'models' && selectedModels.length > 0 && (
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">{selectedModels.length}</span>
+                  </div>
+                )}
+                
+                {/* Active indicator dot */}
+                {isActive && (
+                  <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-white rounded-full shadow-sm"></div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Active Panel */}
+      {renderPanel()}
+      
+      {/* Tooltip - only show when no panel is active */}
+      {!activePanel && renderTooltip()}
+
+      {/* Backdrop */}
+      {activePanel && (
+        <div 
+          className="fixed inset-0 z-30"
+          onClick={() => setActivePanel(null)}
+        />
+      )}
+    </>
+  );
+};
 const CollapsibleSidebar = ({ 
   isCollapsed, 
   setIsCollapsed, 
-  isMobileOpen, 
-  setIsMobileOpen,
   summaryLength, 
   setSummaryLength,
   selectedModels,
@@ -49,19 +304,6 @@ const CollapsibleSidebar = ({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
-  // Mobile overlay handler
-  useEffect(() => {
-    if (isMobileOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isMobileOpen]);
 
   const sidebarContent = (
     <div className="h-full flex flex-col">
@@ -87,16 +329,6 @@ const CollapsibleSidebar = ({
               ) : (
                 <ChevronLeft className="h-4 w-4 text-gray-600" />
               )}
-            </button>
-          )}
-          
-          {/* Mobile close button */}
-          {isMobile && (
-            <button
-              onClick={() => setIsMobileOpen(false)}
-              className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors lg:hidden"
-            >
-              <X className="h-4 w-4 text-gray-600" />
             </button>
           )}
         </div>
@@ -279,21 +511,9 @@ const CollapsibleSidebar = ({
     </div>
   );
 
-  // Mobile version (overlay)
+
   if (isMobile) {
-    return (
-      <>
-        {/* Mobile overlay */}
-        {isMobileOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="fixed inset-0 bg-black/50" onClick={() => setIsMobileOpen(false)} />
-            <div className="fixed right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-xl">
-              {sidebarContent}
-            </div>
-          </div>
-        )}
-      </>
-    );
+    return null;
   }
 
   // Desktop version
@@ -494,9 +714,8 @@ function HomeContent() {
   const [analysisMode, setAnalysisMode] = useState('single');
   const [showProUpgrade, setShowProUpgrade] = useState(false);
   
-  // Sidebar state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
   
   const searchParams = useSearchParams();
   const { isSignedIn, isLoaded } = useUser();
@@ -663,22 +882,20 @@ function HomeContent() {
         
         <AuthWrapper>
           <SubscriptionHandler onUsageCheck={handleUsageCheck} showProUpgradeIntent={showProUpgrade}>
-            
+          <FloatingSettingsBar
+              summaryLength={summaryLength}
+              setSummaryLength={setSummaryLength}
+              selectedModels={selectedModels}
+              setSelectedModels={setSelectedModels}
+              analysisMode={analysisMode}
+              setAnalysisMode={setAnalysisMode}
+              sidebarCollapsed={sidebarCollapsed}
+            />
             <div className="flex h-[calc(100vh-80px)]">
-              {/* Mobile Settings Button */}
-              <button
-                onClick={() => setMobileSidebarOpen(true)}
-                className="lg:hidden fixed top-20 right-4 z-40 bg-indigo-500 text-white p-3 rounded-xl shadow-lg hover:bg-indigo-600 transition-colors"
-              >
-                <Menu className="h-5 w-5" />
-              </button>
-
               {/* Sidebar */}
               <CollapsibleSidebar
                 isCollapsed={sidebarCollapsed}
                 setIsCollapsed={setSidebarCollapsed}
-                isMobileOpen={mobileSidebarOpen}
-                setIsMobileOpen={setMobileSidebarOpen}
                 summaryLength={summaryLength}
                 setSummaryLength={setSummaryLength}
                 selectedModels={selectedModels}
