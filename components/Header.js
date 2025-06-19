@@ -23,7 +23,7 @@ export default function Header() {
         ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/80' 
         : 'bg-white shadow-sm border-b border-gray-200'
     }`}>
-      <div className="max-w-6xl mx-auto px-6 py-4">
+      <div className=" px-6 py-4">
         <div className="flex items-center justify-between">
           
           {/* Enhanced Logo Section */}
