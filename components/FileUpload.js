@@ -111,7 +111,7 @@ export default function FileUpload({ onFileSelect, isProcessing ,acceptedTypes,p
               
               {/* Enhanced file type display */}
               <div className="flex flex-wrap justify-center gap-2 mt-4">
-                {acceptedTypes.map((format) => (
+                {acceptedTypes&&acceptedTypes.map((format) => (
                   <span key={format} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
                     {format}
                   </span>
