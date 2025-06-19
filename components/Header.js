@@ -46,7 +46,7 @@ export default function Header() {
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  MeetingMind
+                  Sumraiz
                 </h1>
                 {/* AI badge */}
                 <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">
@@ -54,7 +54,7 @@ export default function Header() {
                 </span>
               </div>
               <p className="text-sm text-gray-600 font-medium">
-                AI-powered meeting summarizer
+                AI-powered summarizer
               </p>
             </div>
           </div>

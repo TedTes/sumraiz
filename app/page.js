@@ -14,14 +14,11 @@ import {
   Settings, 
   ChevronLeft, 
   ChevronRight, 
-  Menu, 
-  X,
   Target,
   Bot,
   Globe,
   FileText,
   ChevronDown,
-  ChevronUp
 } from 'lucide-react';
 
 
@@ -30,24 +27,22 @@ const FloatingSettingsBar = ({
   setSummaryLength,
   selectedModels,
   setSelectedModels,
-  analysisMode,
-  setAnalysisMode,
   sidebarCollapsed = false
 }) => {
   const [activePanel, setActivePanel] = useState(null);
   const [hoveredButton, setHoveredButton] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
 
-    // Track window size changes
-    useEffect(() => {
-      const checkMobile = () => {
-        setIsMobile(window.innerWidth < 1024);
-      };
-      
-      checkMobile();
-      window.addEventListener('resize', checkMobile);
-      return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+  // Track window size changes
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const settingsButtons = [
     {
@@ -281,15 +276,14 @@ const FloatingSettingsBar = ({
     </>
   );
 };
+
 const CollapsibleSidebar = ({ 
   isCollapsed, 
   setIsCollapsed, 
   summaryLength, 
   setSummaryLength,
   selectedModels,
-  setSelectedModels,
-  analysisMode,
-  setAnalysisMode 
+  setSelectedModels
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [showModelSelection, setShowModelSelection] = useState(false);
@@ -511,7 +505,6 @@ const CollapsibleSidebar = ({
     </div>
   );
 
-
   if (isMobile) {
     return null;
   }
@@ -528,17 +521,12 @@ const CollapsibleSidebar = ({
   );
 };
 
-//  Upload Zone with sidebar integration
+// Upload Zone
 const UnifiedUploadZone = ({ 
   onFileSelect, 
   onUrlSubmit, 
   isProcessing, 
-  summaryLength, 
-  setSummaryLength,
-  selectedModels,
-  setSelectedModels,
-  analysisMode,
-  setAnalysisMode
+  selectedModels
 }) => {
   const [urlInput, setUrlInput] = useState('');
 
@@ -619,14 +607,14 @@ const UnifiedUploadZone = ({
             {selectedModels.length === 0 && (
               <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                 <p className="text-amber-700 text-sm text-center">
-                  ⚠️ Please configure your settings in the sidebar to proceed
+                  ⚠️ Please configure your settings to proceed
                 </p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Pro Tips Bar - Moved to bottom */}
+        {/* Pro Tips Bar */}
         <div className="flex items-center space-x-6 text-sm text-gray-600 bg-blue-50 rounded-xl p-4">
           <div className="flex items-center space-x-2">
             <span className="text-blue-500">💡</span>
@@ -642,21 +630,17 @@ const UnifiedUploadZone = ({
   );
 };
 
-//  Processing Display
-const UnifiedProcessingDisplay = ({ processingStep, summaryLength, contentType, selectedModels, analysisMode }) => {
+// Processing Display
+const UnifiedProcessingDisplay = ({ processingStep, summaryLength, selectedModels }) => {
   const getProcessingMessages = () => {
-    const baseMessages = {
+    return {
       uploading: 'Uploading and processing media file...',
       transcribing: 'Converting speech to text...',
       analyzing: `Analyzing with ${selectedModels.length} AI model${selectedModels.length > 1 ? 's' : ''}...`,
       extracting: 'Extracting key insights and patterns...',
-      summarizing: analysisMode === 'consensus' 
-        ? 'Creating AI consensus summary...' 
-        : `Generating ${summaryLength} summary...`,
-      consensus: 'Comparing and merging AI perspectives...',
+      summarizing: `Generating ${summaryLength} summary...`,
       complete: 'Analysis complete!'
     };
-    return baseMessages;
   };
 
   const messages = getProcessingMessages();
@@ -673,7 +657,7 @@ const UnifiedProcessingDisplay = ({ processingStep, summaryLength, contentType, 
               <div>
                 <h3 className="text-2xl font-bold text-white">Processing Content</h3>
                 <p className="text-indigo-100">
-                  {analysisMode === 'consensus' ? 'AI Consensus Mode' : `${selectedModels.length} Model${selectedModels.length > 1 ? 's' : ''}`} • {summaryLength} summary
+                  {selectedModels.length} Model{selectedModels.length > 1 ? 's' : ''} • {summaryLength} summary
                 </p>
               </div>
             </div>
@@ -681,8 +665,7 @@ const UnifiedProcessingDisplay = ({ processingStep, summaryLength, contentType, 
             <div className="text-right">
               <div className="text-white/90 text-sm">Estimated time</div>
               <div className="text-white font-bold text-lg">
-                {analysisMode === 'consensus' ? '4-6 minutes' : 
-                 selectedModels.length > 1 ? '3-5 minutes' : '2-3 minutes'}
+                {selectedModels.length > 1 ? '3-5 minutes' : '2-3 minutes'}
               </div>
             </div>
           </div>
@@ -700,7 +683,7 @@ const UnifiedProcessingDisplay = ({ processingStep, summaryLength, contentType, 
   );
 };
 
-// Main Content Hub with sidebar integration
+// Main Content Hub
 function HomeContent() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -711,12 +694,9 @@ function HomeContent() {
   const [userUsage, setUserUsage] = useState(null);
   const [summaryLength, setSummaryLength] = useState('brief');
   const [selectedModels, setSelectedModels] = useState(['gpt-4']);
-  const [analysisMode, setAnalysisMode] = useState('single');
   const [showProUpgrade, setShowProUpgrade] = useState(false);
-  
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  
   const searchParams = useSearchParams();
   const { isSignedIn, isLoaded } = useUser();
 
@@ -766,17 +746,15 @@ function HomeContent() {
       formData.append('audio', file);
       formData.append('summaryLength', summaryLength);
       formData.append('selectedModels', JSON.stringify(selectedModels));
-      formData.append('analysisMode', analysisMode);
 
       setProcessingStep('transcribing');
       
-      const response = await fetch('/api/-summarize', {
+      const response = await fetch('/api/summarize', {
         method: 'POST',
         body: formData,
       });
 
       const result = await response.json();
-
       if (!response.ok) {
         throw new Error(result.error || 'Failed to process content');
       }
@@ -786,11 +764,6 @@ function HomeContent() {
       
       setProcessingStep('extracting');
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      if (analysisMode === 'consensus') {
-        setProcessingStep('consensus');
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
       
       setProcessingStep('summarizing');
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -815,7 +788,7 @@ function HomeContent() {
     setProcessingStep('uploading');
 
     try {
-      const response = await fetch('/api/-process-url', {
+      const response = await fetch('/api/process-url', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -824,8 +797,7 @@ function HomeContent() {
           url,
           type,
           summaryLength,
-          selectedModels,
-          analysisMode
+          selectedModels
         }),
       });
 
@@ -843,11 +815,6 @@ function HomeContent() {
       
       setProcessingStep('extracting');
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (analysisMode === 'consensus') {
-        setProcessingStep('consensus');
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
       
       setProcessingStep('summarizing');
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -882,15 +849,14 @@ function HomeContent() {
         
         <AuthWrapper>
           <SubscriptionHandler onUsageCheck={handleUsageCheck} showProUpgradeIntent={showProUpgrade}>
-          <FloatingSettingsBar
+            <FloatingSettingsBar
               summaryLength={summaryLength}
               setSummaryLength={setSummaryLength}
               selectedModels={selectedModels}
               setSelectedModels={setSelectedModels}
-              analysisMode={analysisMode}
-              setAnalysisMode={setAnalysisMode}
               sidebarCollapsed={sidebarCollapsed}
             />
+            
             <div className="flex h-[calc(100vh-80px)]">
               {/* Sidebar */}
               <CollapsibleSidebar
@@ -900,8 +866,6 @@ function HomeContent() {
                 setSummaryLength={setSummaryLength}
                 selectedModels={selectedModels}
                 setSelectedModels={setSelectedModels}
-                analysisMode={analysisMode}
-                setAnalysisMode={setAnalysisMode}
               />
 
               {/* Main Content Area */}
@@ -915,12 +879,7 @@ function HomeContent() {
                         onFileSelect={handleFileSelect}
                         onUrlSubmit={handleUrlSubmit}
                         isProcessing={isProcessing}
-                        summaryLength={summaryLength}
-                        setSummaryLength={setSummaryLength}
                         selectedModels={selectedModels}
-                        setSelectedModels={setSelectedModels}
-                        analysisMode={analysisMode}
-                        setAnalysisMode={setAnalysisMode}
                       />
                     )}
 
@@ -929,9 +888,7 @@ function HomeContent() {
                       <UnifiedProcessingDisplay 
                         processingStep={processingStep} 
                         summaryLength={summaryLength}
-                        contentType="media"
                         selectedModels={selectedModels}
-                        analysisMode={analysisMode}
                       />
                     )}
 
@@ -940,67 +897,31 @@ function HomeContent() {
                       <ErrorDisplay error={error} onRetry={handleStartOver} />
                     )}
 
-                    {/* Summary Results */}
-                    {hasSummaries && (
-                      <div className="bg-white rounded-3xl border border-gray-200 shadow-lg overflow-hidden">
-                        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 p-6 border-b border-emerald-100">
-                          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                            <div className="flex items-center space-x-4">
-                              <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg">
-                                <span className="text-white text-xl">📄</span>
-                              </div>
-                              <div>
-                                <h3 className="text-2xl font-bold text-emerald-800">
-                                  {analysisMode === 'consensus' ? 'AI Consensus Summary' : 'Analysis Complete'}
-                                </h3>
-                                <p className="text-emerald-600">
-                                  {analysisMode === 'consensus' 
-                                    ? 'Best insights from multiple AI models'
-                                    : `Generated using ${selectedModels.length} AI model${selectedModels.length > 1 ? 's' : ''}`
-                                  }
-                                </p>
-                              </div>
-                            </div>
-                            <button 
-                              onClick={handleStartOver} 
-                              className="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-gray-600 hover:to-gray-700 transition-all duration-200"
-                            >
-                              New Analysis
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Summary Content */}
-                        <div className="p-6">
-                          <div className="prose prose-lg max-w-none">
-                            {analysisMode === 'consensus' ? (
-                              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-6 border border-purple-200 mb-6">
-                                <div className="flex items-center space-x-3 mb-4">
-                                  <span className="text-2xl">🌟</span>
-                                  <h4 className="text-lg font-bold text-purple-800">AI Consensus Summary</h4>
-                                </div>
-                                <p className="text-purple-700 text-sm mb-4">
-                                  This summary represents the best insights and analysis from multiple AI models.
-                                </p>
-                                <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
-                                  {summaries.consensus || 'Generating consensus summary...'}
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
-                                {summaries[selectedModels[0]] || 'Generating summary...'}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
+                  {/* Summary Results */}
+{hasSummaries && (
+  <>
+    <SummaryDisplay 
+      summaries={summaries}
+      selectedModels={selectedModels}
+      transcript={contentTranscript}
+    />
+    
+    {/* Start Over Button */}
+    <div className="flex justify-center">
+      <button 
+        onClick={handleStartOver} 
+        className="bg-gradient-to-r from-gray-500 to-gray-600 text-white px-8 py-4 rounded-2xl font-semibold hover:from-gray-600 hover:to-gray-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+      >
+        🔄 Start New Analysis
+      </button>
+    </div>
+  </>
+)}
+               
                   </div>
                 </div>
               </div>
             </div>
-
           </SubscriptionHandler>
         </AuthWrapper>
       </div>
