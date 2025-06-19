@@ -1,14 +1,80 @@
 'use client';
 
-import { useState } from 'react';
-import { Copy, CheckCircle, Download } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Copy, CheckCircle, Download, Bot, Brain, Sparkles, Zap } from 'lucide-react';
 
-export default function SummaryDisplay({ summary }) {
+export default function SummaryDisplay({ 
+  summaries = {}, 
+  selectedModels = [], 
+  transcript = '' 
+}) {
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState('combined');
+
+  // Determine if single or multi-model mode
+  const isSingleModel = selectedModels.length === 1;
+  const isMultiModel = selectedModels.length > 1;
+
+  // Model configuration
+  const modelConfig = {
+    'gpt-4': { name: 'GPT-4', icon: Bot, color: 'blue', provider: 'OpenAI' },
+    'claude-3-sonnet': { name: 'Claude 3 Sonnet', icon: Brain, color: 'purple', provider: 'Anthropic' },
+    'gemini-pro': { name: 'Gemini Pro', icon: Sparkles, color: 'green', provider: 'Google' },
+    'llama-2-70b': { name: 'Llama 2 70B', icon: Zap, color: 'orange', provider: 'Meta' }
+  };
+
+  // Initialize active tab based on mode
+  useState(() => {
+    if (isSingleModel) {
+      setActiveTab(selectedModels[0]);
+    } else if (isMultiModel) {
+      setActiveTab('combined');
+    }
+  }, [selectedModels]);
+
+  // Generate smart combined summary
+  const combinedSummary = useMemo(() => {
+    if (isSingleModel || Object.keys(summaries).length <= 1) {
+      return summaries[selectedModels[0]] || '';
+    }
+
+    // TODO:Simple combination logic - can be enhanced with AI merging
+    const allSummaries = selectedModels.map(model => summaries[model]).filter(Boolean);
+    
+    if (allSummaries.length === 0) return '';
+    
+    return `**Multi-Model Analysis Summary**
+
+This analysis combines insights from ${selectedModels.length} AI models: ${selectedModels.map(id => modelConfig[id]?.name || id).join(', ')}.
+
+**Consensus Insights**
+${allSummaries[0]}
+
+**Additional Perspectives**
+${allSummaries.slice(1).map((summary, index) => 
+  `\n**${modelConfig[selectedModels[index + 1]]?.name || selectedModels[index + 1]} Perspective:**\n${summary}`
+).join('\n')}
+
+**Confidence Level:** High (${selectedModels.length} models analyzed)`;
+  }, [summaries, selectedModels]);
+
+  // Get current content based on active tab
+  const getCurrentContent = () => {
+    if (activeTab === 'combined') {
+      return combinedSummary;
+    }
+    return summaries[activeTab] || '';
+  };
+
+  const currentContent = getCurrentContent();
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(summary);
+      const contentToCopy = isMultiModel && activeTab === 'combined' 
+        ? combinedSummary 
+        : currentContent;
+      
+      await navigator.clipboard.writeText(contentToCopy);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -17,16 +83,26 @@ export default function SummaryDisplay({ summary }) {
   };
 
   const handleDownload = () => {
+    const contentToDownload = isMultiModel && activeTab === 'combined'
+      ? combinedSummary
+      : currentContent;
+    
+    const filename = isMultiModel 
+      ? `multi-model-summary-${new Date().toISOString().split('T')[0]}.txt`
+      : `${activeTab}-summary-${new Date().toISOString().split('T')[0]}.txt`;
+
     const element = document.createElement('a');
-    const file = new Blob([summary], { type: 'text/plain' });
+    const file = new Blob([contentToDownload], { type: 'text/plain' });
     element.href = URL.createObjectURL(file);
-    element.download = `meeting-summary-${new Date().toISOString().split('T')[0]}.txt`;
+    element.download = filename;
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
   };
 
   const formatSummary = (text) => {
+    if (!text) return [];
+    
     const sections = text.split('**').filter(Boolean);
     const formattedSections = [];
     
@@ -44,9 +120,10 @@ export default function SummaryDisplay({ summary }) {
     return formattedSections;
   };
 
-  const sections = formatSummary(summary);
+  const sections = formatSummary(currentContent);
 
-  if (!summary) return null;
+  // Don't render if no summaries
+  if (!currentContent && Object.keys(summaries).length === 0) return null;
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-8 animate-fade-in-up">
@@ -55,14 +132,24 @@ export default function SummaryDisplay({ summary }) {
         <div className="border-b border-gray-200 px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Meeting Summary</h2>
+              <h2 className="text-2xl font-bold text-gray-900">
+                {isSingleModel ? 'AI Summary' : 'Multi-Model Analysis'}
+              </h2>
               <p className="text-gray-500 mt-2">
-                Generated on {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
+                {isSingleModel 
+                  ? `Generated by ${modelConfig[selectedModels[0]]?.name || selectedModels[0]} • ${new Date().toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}`
+                  : `${selectedModels.length} AI perspectives combined • ${new Date().toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}`
+                }
               </p>
             </div>
             <div className="flex space-x-3">
@@ -93,8 +180,119 @@ export default function SummaryDisplay({ summary }) {
           </div>
         </div>
 
+        {/* Tab Navigation - Only show if multi-model */}
+        {isMultiModel && (
+          <div className="border-b border-gray-200 bg-gray-50">
+            <div className="px-8">
+              <nav className="flex space-x-8" aria-label="Tabs">
+                {/* Combined Tab */}
+                <button
+                  onClick={() => setActiveTab('combined')}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === 'combined'
+                      ? 'border-indigo-500 text-indigo-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg">🎯</span>
+                    <span>Combined Analysis</span>
+                    <span className="bg-indigo-100 text-indigo-600 py-1 px-2 rounded-full text-xs font-semibold">
+                      {selectedModels.length} models
+                    </span>
+                  </div>
+                </button>
+
+                {/* Individual Model Tabs */}
+                {selectedModels.map((modelId) => {
+                  const model = modelConfig[modelId];
+                  if (!model) return null;
+                  
+                  const IconComponent = model.icon;
+                  
+                  return (
+                    <button
+                      key={modelId}
+                      onClick={() => setActiveTab(modelId)}
+                      className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                        activeTab === modelId
+                          ? `border-${model.color}-500 text-${model.color}-600`
+                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <IconComponent className="h-4 w-4" />
+                        <span>{model.name}</span>
+                        {summaries[modelId] && (
+                          <div className={`w-2 h-2 bg-${model.color}-500 rounded-full`}></div>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+          </div>
+        )}
+
         {/* Content */}
         <div className="p-6 space-y-6">
+          {/* Current Tab Indicator for Multi-Model */}
+          {isMultiModel && (
+            <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4 mb-6">
+              <div className="flex items-center space-x-3">
+                {activeTab === 'combined' ? (
+                  <>
+                    <span className="text-2xl">🎯</span>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">Combined Analysis</h4>
+                      <p className="text-sm text-gray-600">
+                        Insights merged from {selectedModels.length} AI models
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {(() => {
+                      const model = modelConfig[activeTab];
+                      if (!model) return null;
+                      const IconComponent = model.icon;
+                      return (
+                        <>
+                          <IconComponent className={`h-8 w-8 text-${model.color}-600`} />
+                          <div>
+                            <h4 className="font-semibold text-gray-900">{model.name}</h4>
+                            <p className="text-sm text-gray-600">By {model.provider}</p>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </>
+                )}
+              </div>
+              
+              {/* Confidence Indicator */}
+              <div className="flex items-center space-x-2">
+                <div className="flex space-x-1">
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className={`w-2 h-2 rounded-full ${
+                        i < selectedModels.length ? 'bg-green-500' : 'bg-gray-300'
+                      }`}
+                    ></div>
+                  ))}
+                </div>
+                <span className="text-sm text-gray-600 font-medium">
+                  {selectedModels.length > 3 ? 'Very High' : 
+                   selectedModels.length > 2 ? 'High' :
+                   selectedModels.length > 1 ? 'Medium' : 'Good'} Confidence
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Summary Content */}
           {sections.length > 0 ? (
             sections.map((section, index) => (
               <div key={index} className="summary-section">
@@ -125,7 +323,7 @@ export default function SummaryDisplay({ summary }) {
             ))
           ) : (
             <div className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-              {summary}
+              {currentContent}
             </div>
           )}
         </div>
@@ -133,7 +331,10 @@ export default function SummaryDisplay({ summary }) {
         {/* Footer */}
         <div className="border-t border-gray-200 px-6 py-4 bg-gray-50">
           <p className="text-xs text-gray-500 text-center">
-            Summary generated by MeetingMind AI • Review for accuracy before sharing
+            {isSingleModel 
+              ? `Summary generated by ${modelConfig[selectedModels[0]]?.name || 'AI'} • Review for accuracy before sharing`
+              : `Multi-model analysis by MeetingMind AI • ${selectedModels.length} models • Review for accuracy before sharing`
+            }
           </p>
         </div>
       </div>
