@@ -129,34 +129,3 @@ export default function Header() {
   );
 }
 
-export const CompactHeader = () => {
-  const { isSignedIn } = useUser();
-  
-  return (
-    <header className="bg-white border-b border-gray-200">
-      <div className="max-w-6xl mx-auto px-6 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-2 rounded-lg">
-              <Brain className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-lg font-bold text-gray-900">MeetingMind</span>
-          </div>
-          
-          {isSignedIn && (
-            <div className="flex items-center space-x-3">
-              <HeaderSubscriptionIndicator />
-              <UserButton 
-                appearance={{
-                  elements: {
-                    avatarBox: "h-8 w-8"
-                  }
-                }}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-    </header>
-  );
-};
