@@ -24,7 +24,7 @@ export default function ProcessingStatus({ status, currentStep }) {
   return (
     <div className="w-full max-w-2xl mx-auto mt-8 animate-slide-in-down">
       <div className="card p-8">
-        <h3 className="text-xl font-semibold text-gray-900 mb-8 text-center">Processing your meeting...</h3>
+        <h3 className="text-xl font-semibold text-gray-900 mb-8 text-center">Processing uploaded file...</h3>
         
         <div className="space-y-4">
           {steps.slice(0, -1).map((step) => {
