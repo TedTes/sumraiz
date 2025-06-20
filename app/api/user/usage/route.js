@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getUserUsage } from '../../../../lib/usage';
+import { getUserUsage } from '../../../../lib';
 import { auth } from '@clerk/nextjs/server';
 export async function GET() {
     let authResult;
