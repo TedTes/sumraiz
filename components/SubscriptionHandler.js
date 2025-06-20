@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Crown, Zap, AlertCircle, Sparkles, ArrowRight, TrendingUp, Star, Check, X, ChevronDown, ChevronUp } from 'lucide-react';
 
-export default function SubscriptionHandler({ children, onUsageCheck, showProUpgradeIntent }) {
+export default function SubscriptionHandler({ children, onUsageCheck, showProUpgradeIntent, showStarterUpgradeIntent }) {
   const { user } = useUser();
   const [usage, setUsage] = useState({ count: 0, limit: 3, plan: 'free' });
-  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [showProUpgrade, setShowProUpgrade] = useState(false);
+  const [showStarterUpgrade, setShowStarterUpgrade] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -17,9 +18,11 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
 
   useEffect(() => {
     if (showProUpgradeIntent) {
-      setShowUpgrade(true);
+      setShowProUpgrade(true);
+    } else if (showStarterUpgradeIntent) {
+      setShowStarterUpgrade(true);
     }
-  }, [showProUpgradeIntent]);
+  }, [showProUpgradeIntent, showStarterUpgradeIntent]);
 
   const refreshUsage = async () => {
     await checkUserUsage();
@@ -42,7 +45,6 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
         onUsageCheck(data);
       }
 
-      // Also dispatch custom event for header to listen to
       window.dispatchEvent(new CustomEvent('usageUpdate', { 
         detail: { 
           usage: data,
@@ -55,12 +57,12 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
     }
   };
 
-  const handleUpgrade = async () => {
+  const handleUpgrade = async (plan = 'pro') => {
     try {
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: 'pro' })
+        body: JSON.stringify({ plan })
       });
       
       const { checkoutUrl } = await response.json();
@@ -72,19 +74,19 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
 
   const remaining = usage.limit - usage.count;
 
-  // Full-screen upgrade modal
-  if (showUpgrade) {
+  // Starter Upgrade Modal
+  if (showStarterUpgrade) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
         <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+          <div className="bg-gradient-to-r from-gray-600 to-gray-800 p-6 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Crown className="h-8 w-8 text-yellow-300" />
-                <h3 className="text-2xl font-bold">Upgrade to Pro</h3>
+                <Zap className="h-8 w-8 text-yellow-300" />
+                <h3 className="text-2xl font-bold">Start with Starter</h3>
               </div>
               <button 
-                onClick={() => setShowUpgrade(false)}
+                onClick={() => setShowStarterUpgrade(false)}
                 className="text-white/80 hover:text-white text-2xl"
               >
                 ×
@@ -95,8 +97,7 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
           <div className="p-6">
             <div className="text-center mb-6">
               <p className="text-gray-600 text-lg">
-                You still have {remaining} free {remaining === 1 ? 'summary' : 'summaries'} left, 
-                but why wait? Upgrade now and unlock unlimited access!
+                Perfect for getting started with regular content summarization
               </p>
             </div>
             
@@ -105,39 +106,128 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
               <ul className="space-y-3">
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span className="text-gray-700">Unlimited meeting summaries</span>
+                  <span className="text-gray-700">15 summaries per month</span>
                 </li>
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span className="text-gray-700">Priority processing (2x faster)</span>
+                  <span className="text-gray-700">Choose any AI model</span>
                 </li>
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span className="text-gray-700">Advanced exports (PDF, Word, Email)</span>
+                  <span className="text-gray-700">Up to 1 hour audio</span>
                 </li>
                 <li className="flex items-center">
                   <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                  <span className="text-gray-700">Priority customer support</span>
+                  <span className="text-gray-700">All export formats</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Email support</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="bg-gray-50 rounded-xl p-6 mb-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-800 mb-2">$9/month</div>
+                <p className="text-gray-600">Perfect for individuals • Cancel anytime</p>
+              </div>
+            </div>
+            
+            <div className="flex space-x-4">
+              <button 
+                onClick={() => setShowStarterUpgrade(false)}
+                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Maybe Later
+              </button>
+              <button 
+                onClick={() => handleUpgrade('starter')}
+                className="flex-1 bg-gradient-to-r from-gray-600 to-gray-800 hover:from-gray-700 hover:to-gray-900 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
+              >
+                <span>Start with Starter</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Pro Upgrade Modal
+  if (showProUpgrade) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50">
+        <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Crown className="h-8 w-8 text-yellow-300" />
+                <h3 className="text-2xl font-bold">Upgrade to Pro</h3>
+              </div>
+              <button 
+                onClick={() => setShowProUpgrade(false)}
+                className="text-white/80 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+          
+          <div className="p-6">
+            <div className="text-center mb-6">
+              <p className="text-gray-600 text-lg">
+                Unlock unlimited summaries and advanced multi-model analysis
+              </p>
+            </div>
+            
+            <div className="space-y-4 mb-8">
+              <h4 className="font-bold text-lg text-gray-900">What you'll get:</h4>
+              <ul className="space-y-3">
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">50 summaries per month</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Multi-model comparison</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Up to 3 hour audio</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Priority processing</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Advanced exports</span>
+                </li>
+                <li className="flex items-center">
+                  <Check className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
+                  <span className="text-gray-700">Priority support</span>
                 </li>
               </ul>
             </div>
             
             <div className="bg-indigo-50 rounded-xl p-6 mb-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-indigo-600 mb-2">$29/month</div>
-                <p className="text-gray-600">Cancel anytime • 30-day money back guarantee</p>
+                <div className="text-3xl font-bold text-indigo-600 mb-2">$19/month</div>
+                <p className="text-gray-600">Most popular • Cancel anytime • 14-day guarantee</p>
               </div>
             </div>
             
             <div className="flex space-x-4">
               <button 
-                onClick={() => setShowUpgrade(false)}
+                onClick={() => setShowProUpgrade(false)}
                 className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
               >
                 Maybe Later
               </button>
               <button 
-                onClick={handleUpgrade}
+                onClick={() => handleUpgrade('pro')}
                 className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
               >
                 <span>Upgrade Now</span>
@@ -154,7 +244,7 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
   if (usage.count >= usage.limit && usage.plan === 'free') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center p-6">
-        <div className="max-w-4xl w-full">
+        <div className="max-w-5xl w-full">
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
             <div className="bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 p-8 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 -translate-y-12 translate-x-12">
@@ -170,9 +260,9 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
                 </div>
                 <h2 className="text-4xl font-bold mb-4">🎉 Trial Complete!</h2>
                 <p className="text-xl text-indigo-100 mb-2">
-                  You've processed {usage.count} meetings successfully
+                  You've processed {usage.count} summaries successfully
                 </p>
-                <p className="text-lg text-indigo-200">Ready to unlock unlimited access?</p>
+                <p className="text-lg text-indigo-200">Ready to unlock more content analysis?</p>
               </div>
             </div>
 
@@ -192,7 +282,8 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                {/* Current Free Plan */}
                 <div className="border-2 border-gray-200 rounded-2xl p-6 relative">
                   <div className="absolute -top-3 left-4 bg-gray-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                     Current Plan
@@ -202,15 +293,15 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
                   <ul className="space-y-3 mb-6">
                     <li className="flex items-center">
                       <Check className="h-5 w-5 text-green-500 mr-3" />
-                      <span className="text-gray-700">3 meeting summaries</span>
+                      <span className="text-gray-700">3 summaries</span>
                     </li>
                     <li className="flex items-center">
                       <Check className="h-5 w-5 text-green-500 mr-3" />
-                      <span className="text-gray-700">Basic AI features</span>
+                      <span className="text-gray-700">Choose any AI model</span>
                     </li>
                     <li className="flex items-center">
                       <AlertCircle className="h-5 w-5 text-gray-400 mr-3" />
-                      <span className="text-gray-500 line-through">Unlimited access</span>
+                      <span className="text-gray-500 line-through">More summaries</span>
                     </li>
                   </ul>
                   <div className="bg-gray-100 text-gray-600 py-3 px-4 rounded-lg text-center font-medium">
@@ -218,31 +309,65 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
                   </div>
                 </div>
 
-                <div className="border-2 border-indigo-300 bg-indigo-50 rounded-2xl p-6 relative transform scale-105">
-                  <div className="absolute -top-3 left-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-bold flex items-center space-x-1">
-                    <Star className="h-4 w-4" />
-                    <span>Recommended</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">MeetingMind Pro</h3>
-                  <div className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">$29</div>
+                {/* Starter Plan */}
+                <div className="border-2 border-gray-300 rounded-2xl p-6 relative">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Starter</h3>
+                  <div className="text-3xl font-bold text-gray-900 mb-4">$9</div>
                   <div className="text-gray-600 mb-4">per month</div>
                   
                   <ul className="space-y-3 mb-6">
                     <li className="flex items-center">
                       <Check className="h-5 w-5 text-green-500 mr-3" />
-                      <span className="text-gray-700 font-medium">Unlimited summaries</span>
+                      <span className="text-gray-700">15 summaries/month</span>
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-5 w-5 text-green-500 mr-3" />
+                      <span className="text-gray-700">Any AI model</span>
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-5 w-5 text-green-500 mr-3" />
+                      <span className="text-gray-700">1 hour audio</span>
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-5 w-5 text-green-500 mr-3" />
+                      <span className="text-gray-700">All exports</span>
+                    </li>
+                  </ul>
+                  
+                  <button 
+                    onClick={() => handleUpgrade('starter')}
+                    className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 hover:scale-105"
+                  >
+                    Choose Starter
+                  </button>
+                </div>
+
+                {/* Pro Plan */}
+                <div className="border-2 border-indigo-300 bg-indigo-50 rounded-2xl p-6 relative transform scale-105">
+                  <div className="absolute -top-3 left-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-1 rounded-full text-sm font-bold flex items-center space-x-1">
+                    <Star className="h-4 w-4" />
+                    <span>Most Popular</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Pro</h3>
+                  <div className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4">$19</div>
+                  <div className="text-gray-600 mb-4">per month</div>
+                  
+                  <ul className="space-y-3 mb-6">
+                    <li className="flex items-center">
+                      <Check className="h-5 w-5 text-green-500 mr-3" />
+                      <span className="text-gray-700 font-medium">50 summaries/month</span>
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-5 w-5 text-green-500 mr-3" />
+                      <span className="text-gray-700">Multi-model comparison</span>
+                    </li>
+                    <li className="flex items-center">
+                      <Check className="h-5 w-5 text-green-500 mr-3" />
+                      <span className="text-gray-700">3 hour audio</span>
                     </li>
                     <li className="flex items-center">
                       <Check className="h-5 w-5 text-green-500 mr-3" />
                       <span className="text-gray-700">Priority processing</span>
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="h-5 w-5 text-green-500 mr-3" />
-                      <span className="text-gray-700">Advanced exports (PDF, Word)</span>
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="h-5 w-5 text-green-500 mr-3" />
-                      <span className="text-gray-700">Email integration</span>
                     </li>
                     <li className="flex items-center">
                       <Check className="h-5 w-5 text-green-500 mr-3" />
@@ -251,10 +376,10 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
                   </ul>
                   
                   <button 
-                    onClick={handleUpgrade}
+                    onClick={() => handleUpgrade('pro')}
                     className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3"
                   >
-                    <span className="text-lg">Upgrade Now</span>
+                    <span className="text-lg">Upgrade to Pro</span>
                     <ArrowRight className="h-5 w-5" />
                   </button>
                 </div>
@@ -272,11 +397,11 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
                   </span>
                   <span className="flex items-center space-x-1">
                     <span>🎯</span>
-                    <span>30-day guarantee</span>
+                    <span>14-day guarantee</span>
                   </span>
                 </div>
                 <p className="text-xs text-gray-400">
-                  Join hundreds of teams who never miss important action items
+                  Join thousands who never miss important insights from their content
                 </p>
               </div>
             </div>
@@ -286,10 +411,9 @@ export default function SubscriptionHandler({ children, onUsageCheck, showProUpg
     );
   }
 
-  // Normal case - just render children (no banners in body)
+  // Normal case - just render children
   return <div>{children}</div>;
 }
-
 
 export const HeaderSubscriptionIndicator = () => {
   const [subscriptionData, setSubscriptionData] = useState(null);
@@ -297,14 +421,12 @@ export const HeaderSubscriptionIndicator = () => {
   useEffect(() => {
     const handleUsageUpdate = (event) => {
       const { usage, remaining } = event.detail;
-      // Only show for free plan users with remaining summaries
       if (usage.plan === 'free' && remaining > 0) {
         setSubscriptionData({
           remaining,
           isLastSummary: remaining === 1
         });
       } else {
-        // Hide component for Pro users or when trial is exhausted
         setSubscriptionData(null);
       }
     };
@@ -313,12 +435,12 @@ export const HeaderSubscriptionIndicator = () => {
     return () => window.removeEventListener('usageUpdate', handleUsageUpdate);
   }, []);
 
-  const handleUpgrade = async () => {
+  const handleUpgrade = async (plan = 'pro') => {
     try {
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: 'pro' })
+        body: JSON.stringify({ plan })
       });
       
       const { checkoutUrl } = await response.json();
@@ -328,19 +450,14 @@ export const HeaderSubscriptionIndicator = () => {
     }
   };
   
-  // Component will not render (return null) in these cases:
-  // 1. User is on Pro plan (usage.plan !== 'free')
-  // 2. User has no remaining free summaries (remaining <= 0)
-  // 3. No subscription data available
   if (!subscriptionData) return null;
   
   const { isLastSummary } = subscriptionData;
   
   return (
     <>
-      {/* Desktop/Tablet Version - Button */}
       <button 
-        onClick={handleUpgrade}
+        onClick={() => handleUpgrade('pro')}
         className={`hidden sm:flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105 ${
           isLastSummary 
             ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-sm'
@@ -348,49 +465,62 @@ export const HeaderSubscriptionIndicator = () => {
         }`}
       >
         <Crown className="h-4 w-4 mr-1.5" />
-        Upgrade to Pro
+        Upgrade
       </button>
 
-      {/* Mobile Version - Subtle Link */}
       <div className="sm:hidden">
         <button 
-          onClick={handleUpgrade}
+          onClick={() => handleUpgrade('pro')}
           className={`text-xs font-medium transition-colors ${
             isLastSummary 
               ? 'text-amber-600 hover:text-amber-700'
               : 'text-indigo-600 hover:text-indigo-700'
           }`}
         >
-          Upgrade to Pro
+          Upgrade
         </button>
       </div>
     </>
   );
 };
 
-//  Pro User Status Indicator (shows after upgrade)
 export const ProUserIndicator = () => {
-  const [isProUser, setIsProUser] = useState(false);
+  const [userPlan, setUserPlan] = useState(null);
   
   useEffect(() => {
     const handleUsageUpdate = (event) => {
       const { usage } = event.detail;
-      setIsProUser(usage.plan === 'pro');
+      if (usage.plan !== 'free') {
+        setUserPlan(usage.plan);
+      } else {
+        setUserPlan(null);
+      }
     };
 
     window.addEventListener('usageUpdate', handleUsageUpdate);
     return () => window.removeEventListener('usageUpdate', handleUsageUpdate);
   }, []);
   
-  if (!isProUser) return null;
+  if (!userPlan) return null;
   
   return (
     <div className="flex items-center space-x-2">
-      <div className="flex items-center space-x-1.5 px-2 py-1 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-full border border-emerald-200">
-        <Crown className="h-3 w-3 text-emerald-600" />
-        <span className="text-xs font-medium text-emerald-700">Pro</span>
+      <div className={`flex items-center space-x-1.5 px-2 py-1 rounded-full border ${
+        userPlan === 'pro' 
+          ? 'bg-gradient-to-r from-emerald-100 to-teal-100 border-emerald-200'
+          : 'bg-gradient-to-r from-gray-100 to-gray-200 border-gray-300'
+      }`}>
+        {userPlan === 'pro' ? (
+          <Crown className="h-3 w-3 text-emerald-600" />
+        ) : (
+          <Zap className="h-3 w-3 text-gray-600" />
+        )}
+        <span className={`text-xs font-medium ${
+          userPlan === 'pro' ? 'text-emerald-700' : 'text-gray-700'
+        }`}>
+          {userPlan === 'pro' ? 'Pro' : 'Starter'}
+        </span>
       </div>
     </div>
   );
 };
-

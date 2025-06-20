@@ -695,6 +695,7 @@ function HomeContent() {
   const [summaryLength, setSummaryLength] = useState('brief');
   const [selectedModels, setSelectedModels] = useState(['gpt-4']);
   const [showProUpgrade, setShowProUpgrade] = useState(false);
+  const [showStarterUpgrade, setShowStarterUpgrade] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const searchParams = useSearchParams();
@@ -704,6 +705,10 @@ function HomeContent() {
     const intent = searchParams.get('intent');
     if (intent === 'pro') {
       setShowProUpgrade(true);
+      setShowStarterUpgrade(false);
+    } else if (intent === 'starter')  {
+      setShowStarterUpgrade(true);
+      setShowProUpgrade(false);
     }
   }, [searchParams]);
 
@@ -848,7 +853,7 @@ function HomeContent() {
         <Header />
         
         <AuthWrapper>
-          <SubscriptionHandler onUsageCheck={handleUsageCheck} showProUpgradeIntent={showProUpgrade}>
+          <SubscriptionHandler onUsageCheck={handleUsageCheck} showProUpgradeIntent={showProUpgrade}  showStarterUpgradeIntent={showStarterUpgrade}>
             <FloatingSettingsBar
               summaryLength={summaryLength}
               setSummaryLength={setSummaryLength}

@@ -102,7 +102,7 @@ export async function POST(request) {
 async function handleCheckoutCreated(event) {
   const { metadata, customer_id } = event.data;
   const clerkUserId = metadata?.userId;
-  
+  const plan = metadata.plan;
   if (!clerkUserId) {
     throw new Error('No userId in checkout metadata');
   }
@@ -110,21 +110,21 @@ async function handleCheckoutCreated(event) {
   // Find or create user
   let user = await prisma.user.upsert({
     where: { clerkUserId },
-    update: { plan: 'pro' },
+    update: { plan: plan },
     create: {
       clerkUserId,
-      plan: 'pro'
+      plan: plan
     }
   });
   
-  // Update usage limits for pro plan
+  // Update usage limits for pro/starter plan
   await prisma.usage.upsert({
     where: { userId: user.id },
-    update: { limit: 999999 }, // Unlimited for pro
+    update: { limit: plan==='starter'?15:50 }, // Unlimited for pro
     create: {
       userId: user.id,
       count: 0,
-      limit: 999999,
+      limit: plan === 'starter' ? 15 : 50,
       resetDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
     }
   });
@@ -135,12 +135,11 @@ async function handleCheckoutCreated(event) {
 // Handle subscription creation
 async function handleSubscriptionCreated(event) {
   const subscription = event.data;
-  const clerkUserId = subscription.metadata?.userId;
-  
-  if (!clerkUserId) return;
+  const {userId,plan} = subscription.metadata;
+  if (!userId) return;
   
   const user = await prisma.user.findUnique({
-    where: { clerkUserId }
+    where: { userId }
   });
   
   if (!user) return;
@@ -152,14 +151,17 @@ async function handleSubscriptionCreated(event) {
       polarSubscriptionId: subscription.id,
       polarCustomerId: subscription.customer_id,
       status: subscription.status,
-      plan: 'pro',
+      plan: plan,
+      features: plan === 'starter' 
+        ? ['single_model', 'basic_export'] 
+        : ['multi_model', 'priority_processing', 'advanced_export'],
       currentPeriodStart: new Date(subscription.current_period_start),
       currentPeriodEnd: new Date(subscription.current_period_end),
       cancelAtPeriodEnd: subscription.cancel_at_period_end || false
     }
   });
   
-  console.log(`✅ Subscription created for user: ${clerkUserId}`);
+  console.log(`✅ Subscription created for user: ${userId}`);
 }
 
 // Handle subscription updates

@@ -22,7 +22,14 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const priceId = process.env.POLAR_PRICE_ID;
+    const { plan } = await request.json();
+
+     // Validate plan
+     if (!plan || !['starter', 'pro'].includes(plan)) {
+      return NextResponse.json({ error: 'Invalid plan specified' }, { status: 400 });
+    }
+
+        const priceId = plan === 'starter'? process.env.POLAR_STARTER_PRICE_ID : process.env.POLAR_PRO_PRICE_ID;
     // Create checkout session with Polar
     const checkout = await polar.checkouts.create({
       products: [priceId],
@@ -30,7 +37,7 @@ export async function POST(request) {
       cancelUrl: `${process.env.NEXT_PUBLIC_URL}/cancel`,
       metadata: {
         userId: userId,
-        plan: 'pro'
+        plan:  plan
       }
     });
 
