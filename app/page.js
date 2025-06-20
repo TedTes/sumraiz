@@ -745,7 +745,7 @@ function HomeContent() {
 
       setProcessingStep('transcribing');
       
-      const response = await fetch('/api/summarize', {
+      const response = await fetch('/api/summarize/audio-summarize', {
         method: 'POST',
         body: formData,
       });
@@ -784,7 +784,7 @@ function HomeContent() {
     setProcessingStep('uploading');
 
     try {
-      const response = await fetch('/api/process-url', {
+      const response = await fetch('/api/summarize/url-summarize', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
