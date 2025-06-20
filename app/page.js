@@ -182,8 +182,14 @@ const FloatingSettingsBar = ({
     };
 
     return (
-      <div className="fixed left-20 top-32 z-50">
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200 w-64 max-h-80 overflow-y-auto">
+      <div className={`fixed z-50 ${
+        isMobile 
+          ? 'left-4 right-4 top-36' // Mobile: full width with margins, positioned further down
+          : 'left-20 top-32' // Desktop: positioned next to sidebar
+      }`}>
+        <div className={`bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto ${
+          isMobile ? 'w-full' : 'w-64'
+        }`}>
           {panelContent[activePanel]}
         </div>
       </div>
@@ -191,14 +197,30 @@ const FloatingSettingsBar = ({
   };
 
   const renderTooltip = () => {
-    if (!hoveredButton) return null;
+    if (!hoveredButton || isMobile) return null; // Hide tooltips on mobile
     
     const button = settingsButtons.find(b => b.id === hoveredButton);
     if (!button) return null;
 
+    // Calculate tooltip position based on button index
+    const buttonIndex = settingsButtons.findIndex(b => b.id === hoveredButton);
+    const baseTop =  132; // Base top position
+    const buttonSpacing = 60; // Height of each button + spacing (48px button + 12px gap)
+    const tooltipTop = baseTop + (buttonIndex * buttonSpacing);
+
     return (
-      <div className="fixed left-20 top-32 z-50 pointer-events-none">
-        <div className="bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+      <div 
+        className="fixed z-50 pointer-events-none"
+        style={{
+          left: isMobile ? '80px' : '80px', // Position to the right of the floating bar
+          top: `${tooltipTop}px`
+        }}
+      >
+        <div className="relative bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-lg">
+          {/* Arrow pointing to the button */}
+          <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1">
+            <div className="w-2 h-2 bg-gray-900 rotate-45"></div>
+          </div>
           <div className="font-semibold">{button.title}</div>
           <div className="text-gray-300 text-xs mt-1">{button.current}</div>
         </div>
@@ -214,7 +236,11 @@ const FloatingSettingsBar = ({
   return (
     <>
       {/* Floating Settings Bar - Mobile + Collapsed Desktop */}
-      <div className="fixed left-4 top-32 z-40">
+      <div className={`fixed z-40 ${
+        isMobile 
+          ? 'top-32 right-4' // Mobile: pushed down further to avoid content overlap
+          : 'left-4 top-32' // Desktop collapsed: left side
+      }`}>
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-gray-200 p-2 space-y-3">
           {settingsButtons.map((button) => {
             const IconComponent = button.icon;
@@ -224,7 +250,7 @@ const FloatingSettingsBar = ({
               <button
                 key={button.id}
                 onClick={() => setActivePanel(isActive ? null : button.id)}
-                onMouseEnter={() => setHoveredButton(button.id)}
+                onMouseEnter={() => !isMobile && setHoveredButton(button.id)}
                 onMouseLeave={() => setHoveredButton(null)}
                 className={`
                   relative w-12 h-12 rounded-xl flex items-center justify-center 
@@ -264,8 +290,8 @@ const FloatingSettingsBar = ({
       {/* Active Panel */}
       {renderPanel()}
       
-      {/* Tooltip - only show when no panel is active */}
-      {!activePanel && renderTooltip()}
+      {/* Tooltip - only show when no panel is active and not on mobile */}
+      {!activePanel && !isMobile && renderTooltip()}
 
       {/* Backdrop */}
       {activePanel && (
@@ -277,6 +303,7 @@ const FloatingSettingsBar = ({
     </>
   );
 };
+
 
 const CollapsibleSidebar = ({ 
   isCollapsed, 
