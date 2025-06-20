@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import Header from '../components/Header';
 import FileUpload from '../components/FileUpload';
+import URLinput from "../components/URLinput";
 import AuthWrapper from '../components/AuthWrapper';
 import SubscriptionHandler from '../components/SubscriptionHandler';
 import ProcessingStatus from '../components/ProcessingStatus';
@@ -521,22 +522,15 @@ const CollapsibleSidebar = ({
   );
 };
 
-// Upload Zone
-const UnifiedUploadZone = ({ 
+//UnifiedUploadZone with URL validation
+const MediaInputPanel = ({ 
   onFileSelect, 
   onUrlSubmit, 
   isProcessing, 
   selectedModels
 }) => {
-  const [urlInput, setUrlInput] = useState('');
 
-  const handleUrlSubmit = () => {
-    if (urlInput.trim() && selectedModels.length > 0) {
-      onUrlSubmit(urlInput.trim(), 'media');
-      setUrlInput('');
-    }
-  };
-
+ 
   return (
     <div className="bg-white rounded-3xl border border-gray-200 shadow-lg overflow-hidden">
       <div className="p-8">
@@ -554,39 +548,10 @@ const UnifiedUploadZone = ({
           </div>
         </div>
 
-        {/* URL Input */}
-        <div className="mb-6">
-          <div className="flex gap-3">
-            <div className="flex-1 relative">
-              <input
-                type="url"
-                value={urlInput}
-                onChange={(e) => setUrlInput(e.target.value)}
-                placeholder="Paste YouTube URL or media link..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && urlInput.trim() && !isProcessing && selectedModels.length > 0) {
-                    handleUrlSubmit();
-                  }
-                }}
-              />
-            </div>
-            <button
-              onClick={handleUrlSubmit}
-              disabled={!urlInput.trim() || isProcessing || selectedModels.length === 0}
-              className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isProcessing ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                  Processing...
-                </>
-              ) : (
-                'Process URL'
-              )}
-            </button>
-          </div>
-        </div>
+       
+        {/* URL Input with Validation */}
+      <URLinput isProcessing = {isProcessing} selectedModels = {selectedModels}   onUrlSubmit = {  onUrlSubmit }/>
+    
 
         {/* Divider */}
         <div className="flex items-center mb-6">
@@ -629,9 +594,8 @@ const UnifiedUploadZone = ({
     </div>
   );
 };
-
 // Processing Display
-const UnifiedProcessingDisplay = ({ processingStep, summaryLength, selectedModels }) => {
+const InputProcessingDisplay = ({ processingStep, summaryLength, selectedModels }) => {
   const getProcessingMessages = () => {
     return {
       uploading: 'Uploading and processing media file...',
@@ -880,7 +844,7 @@ function HomeContent() {
                     
                     {/* Upload Interface */}
                     {!hasSummaries && !isProcessing && (
-                      <UnifiedUploadZone 
+                      <MediaInputPanel 
                         onFileSelect={handleFileSelect}
                         onUrlSubmit={handleUrlSubmit}
                         isProcessing={isProcessing}
@@ -890,7 +854,7 @@ function HomeContent() {
 
                     {/* Processing Display */}
                     {isProcessing && (
-                      <UnifiedProcessingDisplay 
+                      <InputProcessingDisplay 
                         processingStep={processingStep} 
                         summaryLength={summaryLength}
                         selectedModels={selectedModels}
