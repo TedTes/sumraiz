@@ -1,6 +1,6 @@
-# MeetingMind - AI Meeting Summarizer
+# Sumraiz - AI meeting, podcast, youtube summarizer tool
 
-Transform your meeting recordings into actionable summaries with AI-powered transcription and intelligent analysis.
+Transform your meeting,podcast, youtube recordings into actionable summaries with AI-powered transcription and intelligent analysis.
 
 ## Features
 
