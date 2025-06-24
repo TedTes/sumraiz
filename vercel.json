@@ -1,10 +1,14 @@
 {
     "functions": {
-      "app/api/summarize/route.js": {
-        "maxDuration": 60
-      },
+      "app/api/summarize/**/*.js": { 
+      "maxDuration": 300
+    },
+
       "app/api/user/usage/route.js": {
         "maxDuration": 30
-      }
+      },
+      "app/api/user/**/*.js": {         
+      "maxDuration": 10
+    }
     }
   }

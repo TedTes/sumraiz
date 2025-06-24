@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { checkUsageLimit, incrementUserUsage, summarizeContent, extractAudioFromUrl } from '../../../../lib';
+import { checkUsageLimit, incrementUserUsage, summarizeContent, extractAudioFromUrl,transcribeAudio} from '../../../../lib';
 
 export async function POST(request) {
   try {
@@ -89,7 +89,7 @@ export async function POST(request) {
       title: metadata?.title
     });
 
-    // Step 2: Transcribe extracted audio with fallback
+     // Step 2: Transcribe extracted audio with fallback
     let transcriptionResult;
     console.log('Starting transcription...');
     try {

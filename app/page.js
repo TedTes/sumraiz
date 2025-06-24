@@ -862,7 +862,7 @@ function HomeContent() {
     setError('');
   };
 
-  const hasSummaries = Object.keys(summaries).length > 0;
+  const hasSummaries = summaries && Object.keys(summaries).length > 0;
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
