@@ -3,7 +3,7 @@ import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
 import { HeaderSubscriptionIndicator } from './SubscriptionHandler';
 
-export default function Header() {
+export function Header() {
   const { isSignedIn, user } = useUser();
   const [isScrolled, setIsScrolled] = useState(false);
 

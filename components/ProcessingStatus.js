@@ -2,7 +2,7 @@
 
 import { Loader2, Mic, Brain, CheckCircle } from 'lucide-react';
 
-export default function ProcessingStatus({ status, currentStep }) {
+export  function ProcessingStatus({ status, currentStep }) {
   const steps = [
     { id: 'uploading', label: 'Uploading file...', icon: Loader2 },
     { id: 'transcribing', label: 'Transcribing audio...', icon: Mic },

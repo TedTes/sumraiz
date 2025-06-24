@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { Copy, CheckCircle, Download, Bot, Brain, Sparkles, Zap } from 'lucide-react';
 
-export default function SummaryDisplay({ 
+export  function SummaryDisplay({ 
   summaries = {}, 
   selectedModels = [], 
   transcript = '' 

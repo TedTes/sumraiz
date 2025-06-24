@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Crown, Zap, AlertCircle, Sparkles, ArrowRight, TrendingUp, Star, Check, X, ChevronDown, ChevronUp } from 'lucide-react';
 
-export default function SubscriptionHandler({ children, onUsageCheck, showProUpgradeIntent, showStarterUpgradeIntent }) {
+export  function SubscriptionHandler({ children, onUsageCheck, showProUpgradeIntent, showStarterUpgradeIntent }) {
   const { user } = useUser();
   const [usage, setUsage] = useState({ count: 0, limit: 3, plan: 'free' });
   const [showProUpgrade, setShowProUpgrade] = useState(false);

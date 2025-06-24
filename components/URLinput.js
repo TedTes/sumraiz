@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 
-export default function URLinput({isProcessing,selectedModels,   onUrlSubmit}) {
+export  function URLinput({isProcessing,selectedModels,   onUrlSubmit}) {
     const [urlInput, setUrlInput] = useState('');
     const [urlError, setUrlError] = useState('');
     const [isValidating, setIsValidating] = useState(false);

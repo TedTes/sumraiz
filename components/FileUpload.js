@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react';
 import { Upload, FileAudio, X, CheckCircle2 } from 'lucide-react';
 
-export default function FileUpload({ onFileSelect, isProcessing ,acceptedTypes,placeholderText}) {
+export function FileUpload({ onFileSelect, isProcessing ,acceptedTypes,placeholderText}) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);

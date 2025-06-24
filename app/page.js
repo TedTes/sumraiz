@@ -1,14 +1,9 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import Header from '../components/Header';
-import FileUpload from '../components/FileUpload';
-import URLinput from "../components/URLinput";
-import AuthWrapper from '../components/AuthWrapper';
-import SubscriptionHandler from '../components/SubscriptionHandler';
-import ProcessingStatus from '../components/ProcessingStatus';
-import SummaryDisplay from '../components/SummaryDisplay';
-import LandingPage from '../components/LandingPage';
+import {FileConfirmationModal,LandingPage,SummaryDisplay,
+  ProcessingStatus,SubscriptionHandler,AuthWrapper,URLinput,
+  FileUpload,Header} from "../components";
 import { useUser } from '@clerk/nextjs';
 import { useSearchParams } from 'next/navigation';
 import { 
@@ -554,10 +549,30 @@ const MediaInputPanel = ({
   onFileSelect, 
   onUrlSubmit, 
   isProcessing, 
-  selectedModels
+  selectedModels,
+  summaryLength
 }) => {
 
- 
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingFile, setPendingFile] = useState(null);
+
+  const handleFileSelect = (file) => {
+    setPendingFile(file);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmProcessing = () => {
+    if (pendingFile) {
+      setShowConfirmModal(false);
+      onFileSelect(pendingFile); // This triggers the actual processing
+      setPendingFile(null);
+    }
+  };
+
+  const handleCancelModal = () => {
+    setShowConfirmModal(false);
+    setPendingFile(null);
+  };
   return (
     <div className="bg-white rounded-3xl border border-gray-200 shadow-lg overflow-hidden">
       <div className="p-8">
@@ -591,7 +606,7 @@ const MediaInputPanel = ({
         <div className="flex-1 flex items-center justify-center mb-6">
           <div className="w-full">
             <FileUpload 
-              onFileSelect={onFileSelect} 
+              onFileSelect={handleFileSelect}
               isProcessing={isProcessing}
               acceptedTypes={['MP3', 'M4A', 'WAV', 'WebM', 'MP4', 'MOV']}
               placeholderText="Drop your audio or video file here"
@@ -618,6 +633,14 @@ const MediaInputPanel = ({
           </div>
         </div>
       </div>
+      <FileConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={handleCancelModal}
+        onConfirm={handleConfirmProcessing}
+        file={pendingFile}
+        selectedModels={selectedModels}
+        summaryLength={summaryLength}
+      />
     </div>
   );
 };
@@ -876,6 +899,7 @@ function HomeContent() {
                         onUrlSubmit={handleUrlSubmit}
                         isProcessing={isProcessing}
                         selectedModels={selectedModels}
+                        summaryLength={summaryLength}
                       />
                     )}
 

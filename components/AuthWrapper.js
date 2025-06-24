@@ -4,7 +4,7 @@ import { useUser } from '@clerk/nextjs';
 import { SignInButton } from '@clerk/nextjs';
 import { Lock, Zap, Star } from 'lucide-react';
 
-export default function AuthWrapper({ children }) {
+export  function AuthWrapper({ children }) {
   const { isSignedIn, isLoaded } = useUser();
 
   // Show loading state while Clerk loads

@@ -3,7 +3,7 @@
 import { SignInButton } from '@clerk/nextjs';
 import { Brain, Play, Check, Zap, FileText, Clock, Sparkles, ArrowRight, Star, Mic, Video, Youtube, Bot, Globe, Target } from 'lucide-react';
 
-export default function LandingPage() {
+export function LandingPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/*  Header */}
