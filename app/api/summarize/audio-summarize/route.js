@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { transcribeAudioWithOpenAI, summarizeMeetingWithOpenAI } from '../../../../lib/';
-import { checkUsageLimit, incrementUserUsage } from '../../../../lib';
+import { checkUsageLimit, incrementUserUsage,summarizeContent,transcribeAudio } from '../../../../lib';
 
 export async function POST(request) {
   try {
