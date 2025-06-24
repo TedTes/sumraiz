@@ -555,6 +555,7 @@ const MediaInputPanel = ({
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingFile, setPendingFile] = useState(null);
+  const [fileKey, setFileKey] = useState(0);
 
   const handleFileSelect = (file) => {
     setPendingFile(file);
@@ -572,6 +573,7 @@ const MediaInputPanel = ({
   const handleCancelModal = () => {
     setShowConfirmModal(false);
     setPendingFile(null);
+    setFileKey(prev => prev + 1);
   };
   return (
     <div className="bg-white rounded-3xl border border-gray-200 shadow-lg overflow-hidden">
@@ -606,6 +608,7 @@ const MediaInputPanel = ({
         <div className="flex-1 flex items-center justify-center mb-6">
           <div className="w-full">
             <FileUpload 
+              key = {fileKey}
               onFileSelect={handleFileSelect}
               isProcessing={isProcessing}
               acceptedTypes={['MP3', 'M4A', 'WAV', 'WebM', 'MP4', 'MOV']}

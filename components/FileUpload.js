@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Upload, FileAudio, X, CheckCircle2 } from 'lucide-react';
 
-export function FileUpload({ onFileSelect, isProcessing ,acceptedTypes,placeholderText}) {
+export const FileUpload = ({ onFileSelect, isProcessing, acceptedTypes, placeholderText }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const fileInputRef = useRef(null);
+
 
   const handleFileSelect = (file) => {
     if (file && isValidFile(file)) {
@@ -127,7 +128,7 @@ export function FileUpload({ onFileSelect, isProcessing ,acceptedTypes,placehold
           </div>
           
           <input
-            ref={fileInputRef}
+             ref={fileInputRef}
             type="file"
             accept="audio/*,video/*"
             onChange={handleInputChange}
@@ -148,10 +149,10 @@ export function FileUpload({ onFileSelect, isProcessing ,acceptedTypes,placehold
               }`} />
             </div>
             
-            <div className="flex-1">
-              <div className="flex items-center space-x-2 mb-1">
+             <div className="flex-1">
+               <div className="flex items-center space-x-2 mb-1">
                 <span className="text-2xl">{getFileIcon(selectedFile.name)}</span>
-                <h4 className="font-bold text-gray-900 text-lg">{selectedFile.name}</h4>
+                 <h4 className="font-bold text-gray-900 text-lg">{selectedFile.name}</h4>
                 {uploadSuccess && (
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
                 )}
@@ -176,18 +177,10 @@ export function FileUpload({ onFileSelect, isProcessing ,acceptedTypes,placehold
               </button>
             )}
           </div>
-          
-          {/* File preview info */}
-          <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-            <div className="flex items-center space-x-2 text-sm">
-              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-              <span className="text-gray-700 font-medium">
-                File uploaded successfully! Click "Process" to continue.
-              </span>
-            </div>
-          </div>
         </div>
-      )}
+      )
+      
+      }
     </div>
   );
-}
+};
